@@ -294,3 +294,5 @@ button:not(:disabled):active:after,
 ::-webkit-input-placeholder { color: var(--text-shadow); font-weight: lighter; }
 ::-moz-placeholder { color: var(--text-shadow); font-weight: lighter; opacity: 1; }
 ::-ms-input-placeholder { color: var(--text-shadow); font-weight: lighter; }
+body{ font-weight: 400; }
+strong{ font-weight: 700; }
