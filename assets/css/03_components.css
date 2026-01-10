@@ -24,7 +24,7 @@
   padding: 0.4rem 1.0rem 0.4rem 1.2rem;
   display: flex;
   flex-direction: row;
-  gap: 1.0rem;
+  gap: 4.0rem;
 
   background-color: var(--text-secondary);
   border: solid var(--text-shadow);
