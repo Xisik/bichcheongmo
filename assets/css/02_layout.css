@@ -18,6 +18,13 @@
   gap: 1rem;
 }
 
+.header-actions{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .hero {
   margin-bottom: 1rem;
 }
@@ -55,4 +62,11 @@
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+@media (max-width: 640px){
+  .site-header .header-inner{
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
 }

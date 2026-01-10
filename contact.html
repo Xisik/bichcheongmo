@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>빛청모 | 문의하기</title>
 
-  <link rel="icon" href="./favicon.ico">
-  <link rel="stylesheet" href="./assets/css/00_tokens.dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
   <link rel="stylesheet" href="./assets/css/00_tokens.css" />
+  <link rel="stylesheet" href="./assets/css/00_tokens.dark.css" />
   <link rel="stylesheet" href="./assets/css/01_base.css" />
   <link rel="stylesheet" href="./assets/css/02_layout.css" />
   <link rel="stylesheet" href="./assets/css/03_components.css" />
@@ -17,16 +17,25 @@
 <body>
   <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="./index.html" aria-label="홈으로"><img src="./assets/img/logo.jpg" alt="빛청모 로고"></a>
-    <nav class="nav" aria-label="주요 메뉴">
+    <a class="brand" href="./index.html" aria-label="홈으로">빛청모</a>
+
+    <nav class="nav" id="siteNav" aria-label="주요 메뉴">
       <a class="nav-link" href="./index.html">홈</a>
       <a class="nav-link" href="./about.html">단체 소개</a>
       <a class="nav-link" href="./contact.html">문의하기</a>
     </nav>
 
-    <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
-      다크 모드
-    </button>
+    <div class="header-actions">
+      <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">다크 모드</button>
+
+      <button
+        type="button"
+        class="menu-toggle"
+        data-nav-toggle
+        aria-controls="siteNav"
+        aria-expanded="false"
+      >MENU</button>
+    </div>
   </div>
 </header>
 
@@ -68,9 +77,11 @@
   </footer>
 
   <script src="./assets/js/00_dom.js"></script>
+  <script src="./assets/js/30_disclosure.js"></script>
   <script src="./assets/js/10_toast.js"></script>
   <script src="./assets/js/20_modal.js"></script>
   <script src="./assets/js/99_main.js"></script>
   <script src="./assets/js/40_theme.js"></script>
+  <script src="./assets/js/50_mobile_menu.js"></script>
 </body>
 </html>

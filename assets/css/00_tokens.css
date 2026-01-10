@@ -2,8 +2,9 @@
   color-scheme: light;
   /* 배경만 따뜻한 갈색 유지 */
   --main-bg-color   : #E7D7C3;
-  --bg-grid-color   : #D7C6B1;
-  --bg-grid-2-color : rgba(215, 198, 177, 0);
+  /* 격자는 너무 진하지 않게(중립 톤 + 낮은 알파) */
+  --bg-grid-color   : rgba(46, 42, 38, 0.06);
+  --bg-grid-2-color : rgba(46, 42, 38, 0);
 
   /* 나머지 요소(텍스트/패널)는 갈색을 빼고 뉴트럴로 */
   --text-primary    : #2E2A26;   /* 진한 웜 그레이(브라운 아님) */

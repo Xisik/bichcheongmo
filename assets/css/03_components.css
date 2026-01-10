@@ -312,6 +312,72 @@
   gap: 1rem;
 }
 
+.header-actions{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 데스크탑에서는 MENU 버튼 숨김 */
+.menu-toggle{
+  display: none;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+/* 기본: 데스크탑에서는 MENU 버튼 숨김 */
+.header-actions .menu-toggle{
+  display: none;
+}
+
+/* 모바일에서만 MENU 버튼 표시 */
+@media (max-width: 640px){
+  .header-actions .menu-toggle{
+    display: inline-block;
+  }
+}
+
+/* 데스크탑(모바일 아님)에서는 nav가 항상 펼쳐진 상태로 고정 */
+@media (min-width: 641px){
+  .nav{
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+  }
+}
+/* 모바일: 메뉴 접었다가 펼치기 */
+@media (max-width: 640px){
+  .header-inner{
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  /* nav를 한 줄 아래로 내리고, 기본은 닫힘 */
+  .nav{
+    width: 100%;
+    order: 3;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+
+    transition: max-height 220ms ease, opacity 160ms ease;
+  }
+
+  /* 열림 상태 */
+  .nav.is-open{
+    max-height: 400px;
+    opacity: 1;
+    margin-top: 0.75rem;
+  }
+}
+
 .theme-toggle{
   margin-left: auto;   /* 오른쪽 끝으로 밀기 */
   padding: 0.45rem 0.6rem;

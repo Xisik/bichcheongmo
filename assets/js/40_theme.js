@@ -20,7 +20,8 @@
     if (btn) {
       const isDark = theme === "dark";
       btn.setAttribute("aria-pressed", isDark ? "true" : "false");
-      btn.textContent = isDark ? "LIGHT" : "DARK";
+      // 현재 상태를 토글의 "다음 동작"으로 표기
+      btn.textContent = isDark ? "라이트 모드" : "다크 모드";
     }
 
     if (persist) localStorage.setItem(KEY, theme);
