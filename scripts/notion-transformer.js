@@ -197,29 +197,66 @@ function extractRichText(richText) {
  * @param {Array} blocks - 페이지 블록 배열 (선택적)
  * @returns {Object|null} 변환된 활동 데이터 또는 null
  */
+/**
+ * 속성 이름으로 속성 찾기 (대소문자, 공백 무시)
+ * @param {Object} properties - 속성 객체
+ * @param {Array<string>} possibleNames - 가능한 이름 배열
+ * @returns {Object|null} 찾은 속성 또는 null
+ */
+function findProperty(properties, possibleNames) {
+  if (!properties) return null;
+  
+  // 정확한 이름으로 먼저 찾기
+  for (const name of possibleNames) {
+    if (properties[name]) {
+      return properties[name];
+    }
+  }
+  
+  // 대소문자 무시, 공백 무시로 찾기
+  const propertyKeys = Object.keys(properties);
+  for (const name of possibleNames) {
+    const normalizedName = name.toLowerCase().replace(/\s+/g, '');
+    for (const key of propertyKeys) {
+      const normalizedKey = key.toLowerCase().replace(/\s+/g, '');
+      if (normalizedName === normalizedKey) {
+        return properties[key];
+      }
+    }
+  }
+  
+  return null;
+}
+
 function transformNotionPage(page, blocks = []) {
   if (!page || !page.properties) return null;
 
   const properties = page.properties;
 
-  // 필수 필드 추출
-  const title = extractText(properties['제목'] || properties['Title'] || properties['title']);
-  const date = extractDate(properties['날짜'] || properties['Date'] || properties['date']);
-  const summary = extractText(properties['요약'] || properties['Summary'] || properties['summary']);
+  // 필수 필드 추출 (더 유연한 매칭)
+  const titleProperty = findProperty(properties, ['제목', 'Title', 'title', '이름', 'Name', 'name']);
+  const title = extractText(titleProperty);
+  
+  const dateProperty = findProperty(properties, ['날짜', 'Date', 'date', '일자', '날짜/시간']);
+  const date = extractDate(dateProperty);
+  
+  const summaryProperty = findProperty(properties, ['요약', 'Summary', 'summary', '설명', 'Description', 'description']);
+  const summary = extractText(summaryProperty);
   
   // 본문은 블록에서 가져오거나 본문 필드에서 가져오기
-  let body = extractText(properties['본문'] || properties['Body'] || properties['body']);
+  const bodyProperty = findProperty(properties, ['본문', 'Body', 'body', '내용', 'Content', 'content']);
+  let body = extractText(bodyProperty);
   if (!body && blocks.length > 0) {
     body = blocksToMarkdown(blocks);
   }
 
   // 슬러그 또는 ID
-  const slug = extractText(properties['슬러그'] || properties['Slug'] || properties['slug']) || 
-               page.id.replace(/-/g, '').substring(0, 20);
+  const slugProperty = findProperty(properties, ['슬러그', 'Slug', 'slug', 'URL', 'url']);
+  const slug = extractText(slugProperty) || page.id.replace(/-/g, '').substring(0, 20);
 
   // 공개 여부 (기본값: true)
   // Checkbox 또는 Status 타입 모두 지원
-  const publishedProperty = properties['공개 여부'] || properties['Published'] || properties['published'];
+  const publishedProperty = findProperty(properties, ['공개 여부', 'Published', 'published', '공개', '공개여부', 'Public', 'public']);
   let published = true;
   if (publishedProperty) {
     if (publishedProperty.type === 'checkbox') {
@@ -227,29 +264,34 @@ function transformNotionPage(page, blocks = []) {
     } else if (publishedProperty.type === 'status') {
       // Status가 "공개" 또는 "Published"면 true
       const statusName = publishedProperty.status?.name || '';
-      published = statusName === '공개' || statusName === 'Published' || statusName === 'published';
+      published = statusName === '공개' || statusName === 'Published' || statusName === 'published' || statusName === 'Public';
     } else {
       published = true; // 기본값
     }
   }
 
   // 선택적 필드
-  const category = extractSelect(properties['카테고리'] || properties['Category'] || properties['category']);
-  const image = extractFileUrl(
-    properties['이미지'] || 
-    properties['Image'] || 
-    properties['image'] ||
-    properties['파일과 미디어'] ||
-    properties['Files'] ||
-    properties['files']
-  );
+  const categoryProperty = findProperty(properties, ['카테고리', 'Category', 'category', '분류', '분류']);
+  const category = extractSelect(categoryProperty);
+  
+  const imageProperty = findProperty(properties, [
+    '이미지', 'Image', 'image', 
+    '파일과 미디어', 'Files', 'files',
+    '파일', 'File', 'file',
+    '미디어', 'Media', 'media'
+  ]);
+  const image = extractFileUrl(imageProperty);
 
   // 필수 필드 검증
   if (!title || !date) {
     console.warn(`Skipping page ${page.id.substring(0, 8)}: missing required fields`);
-    console.warn(`  - Title: ${title || 'MISSING'} (looking for: 제목, Title, title)`);
-    console.warn(`  - Date: ${date ? date.toISOString() : 'MISSING'} (looking for: 날짜, Date, date)`);
+    console.warn(`  - Title: ${title || 'MISSING'}`);
+    console.warn(`  - Date: ${date ? date.toISOString() : 'MISSING'}`);
     console.warn(`  - Available properties: ${Object.keys(properties).join(', ')}`);
+    console.warn(`  - Property details:`);
+    Object.keys(properties).forEach(key => {
+      console.warn(`    - ${key}: ${properties[key].type || 'unknown'}`);
+    });
     return null;
   }
 
