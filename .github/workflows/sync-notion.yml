@@ -12,6 +12,10 @@ on:
 jobs:
   sync-notion:
     runs-on: ubuntu-latest
+    # 동시 실행 방지: 같은 브랜치에서 여러 번 실행되면 이전 실행 취소
+    concurrency:
+      group: notion-sync-${{ github.ref }}
+      cancel-in-progress: true
     permissions:
       contents: write  # git push를 위한 권한
     
@@ -39,18 +43,31 @@ jobs:
           # 노션 데이터를 가져와서 JSON 파일로 저장하는 스크립트 실행
           node scripts/sync-notion.js
 
-      - name: Pull latest changes
-        run: |
-          git pull --rebase origin "${GITHUB_REF_NAME}" || echo "No remote changes"
-
-      - name: Commit and push if changed
+      - name: Configure git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+
+      - name: Pull latest changes
+        run: |
+          git fetch origin "${GITHUB_REF_NAME}"
+          git pull --rebase origin "${GITHUB_REF_NAME}" || echo "No remote changes or rebase failed"
+
+      - name: Commit and push if changed
+        run: |
           git add data/activities.json || true
           if ! git diff --staged --quiet; then
             git commit -m "chore: sync activities from Notion [skip ci]"
-            git push origin HEAD:"${GITHUB_REF_NAME}" || echo "Push failed, may need manual intervention"
+            # 일반 push 시도
+            if ! git push origin HEAD:"${GITHUB_REF_NAME}"; then
+              echo "Normal push failed, trying force-with-lease..."
+              # 안전한 강제 푸시 (누가 먼저 푸시했는지 체크)
+              git push --force-with-lease origin HEAD:"${GITHUB_REF_NAME}" || {
+                echo "Push failed even with force-with-lease"
+                exit 1
+              }
+            fi
+            echo "Successfully pushed changes"
           else
             echo "No changes to commit"
           fi
