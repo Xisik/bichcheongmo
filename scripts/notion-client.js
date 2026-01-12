@@ -77,6 +77,16 @@ class NotionClient {
    * @returns {Promise<Array>} 페이지 배열
    */
   async queryDatabase(databaseId) {
+    // 데이터베이스 ID 검증
+    if (!databaseId || typeof databaseId !== 'string') {
+      throw new Error('Database ID is required and must be a string');
+    }
+    
+    const cleanId = databaseId.trim().replace(/-/g, '');
+    if (cleanId.length !== 32) {
+      throw new Error(`Invalid database ID: expected 32 characters, got ${cleanId.length} (value: ${databaseId.substring(0, 20)}...)`);
+    }
+    
     const allPages = [];
     let hasMore = true;
     let startCursor = null;
@@ -87,7 +97,11 @@ class NotionClient {
         requestBody.start_cursor = startCursor;
       }
 
-      const response = await this.request('POST', `/databases/${databaseId}/query`, requestBody);
+      // 하이픈 제거한 ID 사용 (Notion API는 하이픈 있음/없음 모두 허용하지만 일관성 유지)
+      const apiPath = `/databases/${cleanId}/query`;
+      console.log(`Making request to: POST ${apiPath}`);
+      
+      const response = await this.request('POST', apiPath, requestBody);
       
       allPages.push(...response.results);
       hasMore = response.has_more;

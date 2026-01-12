@@ -13,21 +13,51 @@ const path = require('path');
 const NotionClient = require('./notion-client');
 const { transformNotionPage } = require('./notion-transformer');
 
-// 환경 변수 확인
-const NOTION_API_KEY = process.env.NOTION_API_KEY;
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
+// 환경 변수 확인 및 검증
+const NOTION_API_KEY = process.env.NOTION_API_KEY?.trim();
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID?.trim();
 
+// API 키 검증
 if (!NOTION_API_KEY) {
-  console.error('ERROR: NOTION_API_KEY environment variable is not set');
+  console.error('ERROR: NOTION_API_KEY environment variable is missing or empty');
   console.error('Please set NOTION_API_KEY in GitHub Secrets');
   process.exit(1);
 }
 
+if (!NOTION_API_KEY.startsWith('secret_')) {
+  console.warn('WARNING: NOTION_API_KEY should start with "secret_"');
+}
+
+// 데이터베이스 ID 검증
 if (!NOTION_DATABASE_ID) {
-  console.error('ERROR: NOTION_DATABASE_ID environment variable is not set');
+  console.error('ERROR: NOTION_DATABASE_ID environment variable is missing or empty');
   console.error('Please set NOTION_DATABASE_ID in GitHub Secrets');
   process.exit(1);
 }
+
+// URL이 들어왔는지 체크
+if (NOTION_DATABASE_ID.startsWith('http')) {
+  console.error('ERROR: NOTION_DATABASE_ID must be a database ID, not a URL');
+  console.error('Please extract the ID from the URL (32-character hex string)');
+  console.error('Example URL: https://www.notion.so/workspace/0123456789abcdef0123456789abcdef?v=...');
+  console.error('Extract ID: 0123456789abcdef0123456789abcdef');
+  process.exit(1);
+}
+
+// 하이픈 제거 후 길이 확인 (32자리 hex)
+const cleanDatabaseId = NOTION_DATABASE_ID.replace(/-/g, '');
+if (cleanDatabaseId.length !== 32) {
+  console.error(`ERROR: NOTION_DATABASE_ID must be 32 characters (got ${cleanDatabaseId.length})`);
+  console.error(`Current value length: ${NOTION_DATABASE_ID.length} (with hyphens: ${NOTION_DATABASE_ID})`);
+  console.error('Please check your NOTION_DATABASE_ID in GitHub Secrets');
+  process.exit(1);
+}
+
+// 디버깅 정보 (민감한 정보는 출력하지 않음)
+console.log(`NOTION_DATABASE_ID length: ${NOTION_DATABASE_ID.length}`);
+console.log(`NOTION_DATABASE_ID (first 8 chars): ${NOTION_DATABASE_ID.substring(0, 8)}...`);
+console.log(`NOTION_API_KEY length: ${NOTION_API_KEY.length}`);
+console.log(`NOTION_API_KEY (first 10 chars): ${NOTION_API_KEY.substring(0, 10)}...`);
 
 /**
  * 노션 API를 사용하여 데이터베이스에서 활동 데이터 가져오기
@@ -44,8 +74,10 @@ async function fetchNotionData() {
     const client = new NotionClient(NOTION_API_KEY);
     
     // 데이터베이스에서 모든 페이지 가져오기
-    console.log(`Querying database: ${NOTION_DATABASE_ID.substring(0, 8)}...`);
-    const pages = await client.queryDatabase(NOTION_DATABASE_ID);
+    // 하이픈 제거한 ID 사용 (Notion API는 하이픈 있음/없음 모두 허용하지만 일관성 유지)
+    const cleanDatabaseId = NOTION_DATABASE_ID.replace(/-/g, '');
+    console.log(`Querying database: ${cleanDatabaseId.substring(0, 8)}...`);
+    const pages = await client.queryDatabase(cleanDatabaseId);
     console.log(`Found ${pages.length} pages in database`);
     
     if (pages.length === 0) {
