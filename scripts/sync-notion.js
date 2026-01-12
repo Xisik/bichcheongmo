@@ -54,10 +54,18 @@ if (cleanDatabaseId.length !== 32) {
 }
 
 // 디버깅 정보 (민감한 정보는 출력하지 않음)
-console.log(`NOTION_DATABASE_ID length: ${NOTION_DATABASE_ID.length}`);
-console.log(`NOTION_DATABASE_ID (first 8 chars): ${NOTION_DATABASE_ID.substring(0, 8)}...`);
+console.log(`DB_ID length: ${NOTION_DATABASE_ID.length}`);
+console.log(`DB_ID includes dots: ${NOTION_DATABASE_ID.includes('...')}`);
+console.log(`DB_ID (first 8 chars): ${NOTION_DATABASE_ID.substring(0, 8)}...`);
 console.log(`NOTION_API_KEY length: ${NOTION_API_KEY.length}`);
 console.log(`NOTION_API_KEY (first 10 chars): ${NOTION_API_KEY.substring(0, 10)}...`);
+
+// ... 포함 여부 체크
+if (NOTION_DATABASE_ID.includes('...')) {
+  console.error('ERROR: NOTION_DATABASE_ID contains "..." - this is likely a masked/truncated value');
+  console.error('Please use the FULL database ID (32 or 36 characters) in GitHub Secrets');
+  process.exit(1);
+}
 
 /**
  * 노션 API를 사용하여 데이터베이스에서 활동 데이터 가져오기
@@ -75,8 +83,9 @@ async function fetchNotionData() {
     
     // 데이터베이스에서 모든 페이지 가져오기
     // 하이픈 제거한 ID 사용 (Notion API는 하이픈 있음/없음 모두 허용하지만 일관성 유지)
+    // 중요: 실제 변수는 전체 ID를 사용하고, 로그에서만 마스킹
     const cleanDatabaseId = NOTION_DATABASE_ID.replace(/-/g, '');
-    console.log(`Querying database: ${cleanDatabaseId.substring(0, 8)}...`);
+    console.log(`Querying database (ID length: ${cleanDatabaseId.length}): ${cleanDatabaseId.substring(0, 8)}...`);
     const pages = await client.queryDatabase(cleanDatabaseId);
     console.log(`Found ${pages.length} pages in database`);
     

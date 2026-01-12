@@ -98,8 +98,10 @@ class NotionClient {
       }
 
       // 하이픈 제거한 ID 사용 (Notion API는 하이픈 있음/없음 모두 허용하지만 일관성 유지)
+      // 중요: cleanId는 전체 32자리 ID (절대 slice하지 않음)
       const apiPath = `/databases/${cleanId}/query`;
-      console.log(`Making request to: POST ${apiPath}`);
+      console.log(`Making request to: POST ${this.baseUrl}${apiPath}`);
+      console.log(`Database ID used (length ${cleanId.length}): ${cleanId.substring(0, 8)}...`);
       
       const response = await this.request('POST', apiPath, requestBody);
       
