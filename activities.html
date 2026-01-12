@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta property="og:image" content="./assets/img/logo.jpg" />
+  <title>빛청모 | 활동공유</title>
+
+  <link rel="icon" href="./assets/img/logo.jpg" sizes="any" />
+  <link rel="stylesheet" href="./assets/css/00_tokens.css" />
+  <link rel="stylesheet" href="./assets/css/00_tokens.dark.css" />
+  <link rel="stylesheet" href="./assets/css/01_base.css" />
+  <link rel="stylesheet" href="./assets/css/02_layout.css" />
+  <link rel="stylesheet" href="./assets/css/03_components.css" />
+  <link rel="stylesheet" href="./assets/css/04_modal.css" />
+  <link rel="stylesheet" href="./assets/css/05_toast.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <div class="header-bar">
+      <a class="brand-link" href="./index.html" aria-label="홈으로">
+        <img class="logo" src="./assets/img/logo.jpg" alt="빛청모">
+      </a>
+
+      <nav class="nav" id="siteNav" aria-label="주요 메뉴">
+        <a class="nav-link" href="./index.html">홈</a>
+        <a class="nav-link" href="./about.html">단체 소개</a>
+        <a class="nav-link" href="./activities.html">활동공유</a>
+        <a class="nav-link" href="./contact.html">문의하기</a>
+      </nav>
+
+      <div class="header-actions">
+        <button
+          type="button"
+          class="menu-toggle"
+          data-nav-toggle
+          aria-controls="siteNav"
+          aria-expanded="false"
+        >MENU</button>
+
+        <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
+          다크 모드
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+
+
+  <main class="container">
+    <section class="page-header">
+      <h1>활동공유</h1>
+      <p>
+      빛청모의 다양한 활동과 소식을 공유하는 공간입니다.
+      </p>
+    </section>
+
+    <section class="card content">
+      <h2>최근 활동</h2>
+      <p>활동 내용이 여기에 표시됩니다.</p>
+    </section>
+
+    <section class="quick-links" aria-label="빠른 이동">
+      <a class="pill" href="./index.html">홈으로</a>
+      <a class="pill" href="./about.html">단체 소개</a>
+      <a class="pill" href="./contact.html">문의하기</a>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>© 빛청모</div>
+      <a href="./index.html">홈</a>
+    </div>
+  </footer>
+
+  <script src="./assets/js/00_dom.js"></script>
+  <script src="./assets/js/30_disclosure.js"></script>
+  <script src="./assets/js/10_toast.js"></script>
+  <script src="./assets/js/20_modal.js"></script>
+  <script src="./assets/js/99_main.js"></script>
+  <script src="./assets/js/40_theme.js"></script>
+  <script src="./assets/js/50_mobile_menu.js"></script>
+
+</body>
+</html>
+
