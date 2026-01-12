@@ -144,19 +144,46 @@
 
 
   /**
-   * 활동 데이터 로드 (임시 구현)
+   * 활동 데이터 로드
    * 
-   * Story 2.2에서 노션 API를 통해 실제 데이터를 가져오는 로직으로 교체됩니다.
-   * 현재는 테스트 데이터를 반환합니다.
+   * Story 2.1: 노션 데이터 소스 연결 및 인증 설정
+   * Story 2.2: 노션 데이터 가져오기 및 변환
+   * 
+   * GitHub Actions에서 노션 데이터를 동기화하여 생성한 JSON 파일을 로드합니다.
+   * 클라이언트 사이드에서는 인증 정보 없이 공개 JSON 파일만 읽습니다.
    * 
    * @returns {Promise<Array>} 활동 데이터 배열
    */
   function loadActivitiesData() {
-    // TODO: Story 2.2에서 실제 노션 데이터 소스로 교체
-    // 현재는 로컬 스토리지 또는 JSON 파일에서 로드하는 시뮬레이션
-    
-    return new Promise((resolve, reject) => {
-      // 시뮬레이션: 약간의 지연 후 테스트 데이터 반환
+    // GitHub Actions에서 생성한 JSON 파일 로드
+    // 인증 정보는 GitHub Actions에서만 사용되며, 클라이언트에는 노출되지 않음
+    return fetch('./data/activities.json')
+      .then(response => {
+        if (!response.ok) {
+          // JSON 파일이 없거나 에러인 경우 테스트 데이터 사용 (폴백)
+          console.warn('활동 데이터 파일을 찾을 수 없습니다. 테스트 데이터를 사용합니다.');
+          return getTestData();
+        }
+        return response.json();
+      })
+      .catch(error => {
+        console.error('활동 데이터 로드 실패:', error);
+        // 에러 발생 시 테스트 데이터 사용 (폴백)
+        console.warn('테스트 데이터를 사용합니다.');
+        return getTestData();
+      });
+  }
+
+  /**
+   * 테스트 데이터 반환 (폴백용)
+   * 
+   * Story 2.2에서 실제 노션 데이터가 준비되면 이 함수는 사용되지 않습니다.
+   * 
+   * @returns {Promise<Array>} 테스트 데이터 배열
+   */
+  function getTestData() {
+    return new Promise((resolve) => {
+      // 약간의 지연 후 테스트 데이터 반환 (시뮬레이션)
       setTimeout(() => {
         // 테스트 데이터 (Story 2.2에서 실제 노션 데이터로 교체)
         const testData = [

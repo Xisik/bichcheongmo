@@ -1,0 +1,50 @@
+name: Sync Notion Activities
+
+on:
+  # 주기적 실행 (30분마다)
+  schedule:
+    - cron: '*/30 * * * *'
+  # 수동 실행
+  workflow_dispatch:
+  # main 브랜치에 푸시 시 (선택적)
+  push:
+    branches:
+      - main
+      - feed  # 현재 브랜치도 포함
+    paths:
+      - '.github/workflows/sync-notion.yml'
+
+jobs:
+  sync-notion:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # git push를 위한 권한
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Sync Notion data
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          # 노션 데이터를 가져와서 JSON 파일로 저장하는 스크립트 실행
+          node scripts/sync-notion.js
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/activities.json || true
+          git diff --staged --quiet || git commit -m "chore: sync activities from Notion [skip ci]"
+          git push || echo "No changes to commit"
+

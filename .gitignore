@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+
+# Notion API keys (절대 커밋하지 마세요!)
+*.key
+*.token
+
+# Data files (GitHub Actions에서 생성)
+# data/activities.json은 커밋되지만, 로컬 테스트용은 제외
+data/activities.local.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
