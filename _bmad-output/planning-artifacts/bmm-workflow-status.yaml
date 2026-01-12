@@ -29,7 +29,7 @@ workflow_status:
       note: "Prerequisite for brownfield without docs"
       workflows:
         - id: "document-project"
-          status: "required"
+          status: "docs/index.md"
           workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
           agent: "analyst"
           command: "/bmad:bmm:workflows:document-project"
@@ -66,7 +66,7 @@ workflow_status:
       required: true
       workflows:
         - id: "prd"
-          status: "required"
+          status: "_bmad-output/planning-artifacts/prd.md"
           exec: "{project-root}/_bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
           agent: "pm"
           command: "/bmad:bmm:workflows:create-prd"
