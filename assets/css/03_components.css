@@ -1,13 +1,13 @@
 .logo {
   margin-left: 10px;
-  width: 30px;
+  width: 40px;
 }
 
 /* 상단 브랜드 */
 .brand {
   position: relative;
   text-decoration: none;
-  padding: 0.75rem 1rem;
+  padding: 0.3rem 0.6rem;
   background-color: var(--text-secondary);
   border: solid var(--text-shadow);
   border-width: 0 0.2rem 0.2rem 0;

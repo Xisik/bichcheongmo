@@ -21,7 +21,7 @@
       const isDark = theme === "dark";
       btn.setAttribute("aria-pressed", isDark ? "true" : "false");
       // 현재 상태를 토글의 "다음 동작"으로 표기
-      btn.textContent = isDark ? "라이트 모드" : "다크 모드";
+      btn.textContent = isDark ? "\udb80\udce0" : "\udb80\udcdb";
     }
 
     if (persist) localStorage.setItem(KEY, theme);
