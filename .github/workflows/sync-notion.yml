@@ -7,13 +7,12 @@ on:
   # 수동 실행
   workflow_dispatch:
   # 브랜치에 푸시 시 (선택적)
+  # paths 필터 제거: 모든 push에서 실행 (루프 방지를 위해 [skip ci] 태그 사용)
   push:
     branches:
       - main
       - feed
       - pr-sync  # PR 동기화 브랜치
-    paths:
-      - '.github/workflows/sync-notion.yml'
 
 jobs:
   sync-notion:
