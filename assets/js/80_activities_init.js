@@ -1,0 +1,275 @@
+(function () {
+  'use strict';
+
+  const ui = window.__ui;
+  if (!ui || !ui.activities) {
+    console.error('활동 모듈이 로드되지 않았습니다.');
+    return;
+  }
+
+  const { parseActivities, sortActivitiesByDate, findActivityBySlug } = ui.activities.data;
+  const { renderActivityList, showLoadingState, showErrorState } = ui.activities.list;
+  const { renderActivityDetail } = ui.activities.detail || {};
+  const { initRouter, getActivitySlugFromUrl, showNotFoundError } = ui.activities.router || {};
+  const { setListPageSEO, setDetailPageSEO, initSEO } = ui.activities.seo || {};
+  const { initLinks, enhanceActivityDetailLinks } = ui.activities.links || {};
+  const $ = ui.$ || ((sel) => document.querySelector(sel));
+
+  // 활동 데이터 캐시
+  let cachedActivities = null;
+
+  /**
+   * 활동 상세 페이지 렌더링
+   * 
+   * Story 1.3: 활동 상세 페이지 구현
+   * Story 1.4: 고유 URL 및 라우팅
+   * 
+   * @param {string|null} slug - 활동 slug (null이면 목록 표시)
+   */
+  function renderRoute(slug) {
+    const container = $('#activities-list');
+    if (!container) {
+      console.error('활동 컨테이너를 찾을 수 없습니다.');
+      return;
+    }
+
+    // 목록 페이지
+    if (!slug) {
+      // SEO 설정 (목록 페이지)
+      if (setListPageSEO) {
+        setListPageSEO();
+      }
+
+      // 캐시된 데이터가 있으면 사용
+      if (cachedActivities) {
+        const sorted = sortActivitiesByDate(cachedActivities);
+        renderActivityList(sorted, container);
+        return;
+      }
+
+      // 로딩 상태 표시
+      showLoadingState(container);
+
+      // 데이터 로드
+      loadActivitiesData()
+        .then(activities => {
+          const parsed = parseActivities(activities);
+          cachedActivities = parsed;
+          const sorted = sortActivitiesByDate(parsed);
+          renderActivityList(sorted, container);
+        })
+        .catch(error => {
+          console.error('활동 목록 로드 실패:', error);
+          showErrorState(container, error.message || '활동 목록을 불러올 수 없습니다.');
+        });
+      return;
+    }
+
+    // 상세 페이지
+    // 로딩 상태 표시
+    if (ui.activities.list && ui.activities.list.showLoadingState) {
+      ui.activities.list.showLoadingState(container);
+    }
+
+    // 캐시된 데이터가 있으면 사용
+    if (cachedActivities) {
+      const activity = findActivityBySlug(cachedActivities, slug);
+      if (activity && renderActivityDetail) {
+        // SEO 설정 (상세 페이지)
+        if (setDetailPageSEO) {
+          setDetailPageSEO(activity);
+        }
+        renderActivityDetail(activity, container);
+        // 외부 링크 처리
+        if (enhanceActivityDetailLinks) {
+          enhanceActivityDetailLinks();
+        }
+      } else {
+        // 활동을 찾을 수 없음
+        if (showNotFoundError) {
+          showNotFoundError(container, '요청하신 활동을 찾을 수 없습니다.');
+        } else if (ui.activities.detail && ui.activities.detail.showErrorState) {
+          ui.activities.detail.showErrorState(container, '요청하신 활동을 찾을 수 없습니다.');
+        }
+        // SEO는 목록 페이지로 설정
+        if (setListPageSEO) {
+          setListPageSEO();
+        }
+      }
+      return;
+    }
+
+    // 데이터 로드
+    loadActivitiesData()
+      .then(activities => {
+        const parsed = parseActivities(activities);
+        cachedActivities = parsed;
+        
+        const activity = findActivityBySlug(parsed, slug);
+        
+        if (activity && renderActivityDetail) {
+          // SEO 설정 (상세 페이지)
+          if (setDetailPageSEO) {
+            setDetailPageSEO(activity);
+          }
+          renderActivityDetail(activity, container);
+          // 외부 링크 처리
+          if (enhanceActivityDetailLinks) {
+            enhanceActivityDetailLinks();
+          }
+        } else {
+          // 활동을 찾을 수 없음
+          if (showNotFoundError) {
+            showNotFoundError(container, '요청하신 활동을 찾을 수 없습니다.');
+          } else if (ui.activities.detail && ui.activities.detail.showErrorState) {
+            ui.activities.detail.showErrorState(container, '요청하신 활동을 찾을 수 없습니다.');
+          }
+          // SEO는 목록 페이지로 설정
+          if (setListPageSEO) {
+            setListPageSEO();
+          }
+        }
+      })
+      .catch(error => {
+        console.error('활동 상세 로드 실패:', error);
+        if (ui.activities.detail && ui.activities.detail.showErrorState) {
+          ui.activities.detail.showErrorState(container, error.message || '활동 상세 내용을 불러올 수 없습니다.');
+        }
+        // SEO는 목록 페이지로 설정
+        if (setListPageSEO) {
+          setListPageSEO();
+        }
+      });
+  }
+
+
+  /**
+   * 활동 데이터 로드 (임시 구현)
+   * 
+   * Story 2.2에서 노션 API를 통해 실제 데이터를 가져오는 로직으로 교체됩니다.
+   * 현재는 테스트 데이터를 반환합니다.
+   * 
+   * @returns {Promise<Array>} 활동 데이터 배열
+   */
+  function loadActivitiesData() {
+    // TODO: Story 2.2에서 실제 노션 데이터 소스로 교체
+    // 현재는 로컬 스토리지 또는 JSON 파일에서 로드하는 시뮬레이션
+    
+    return new Promise((resolve, reject) => {
+      // 시뮬레이션: 약간의 지연 후 테스트 데이터 반환
+      setTimeout(() => {
+        // 테스트 데이터 (Story 2.2에서 실제 노션 데이터로 교체)
+        const testData = [
+          {
+            title: '2026년 1월 정기 모임',
+            date: '2026-01-15',
+            summary: '월간 정기 모임을 진행했습니다. 다양한 주제에 대해 논의하고 정보를 공유했습니다.',
+            body: `이번 모임에서는 다음과 같은 주제들을 다뤘습니다:
+
+## 주요 논의 사항
+
+- 커뮤니티 내 **상호 지원** 방안
+- 향후 활동 계획 수립
+- 새로운 회원 환영 프로그램
+
+## 활동 내용
+
+모임 중에는 참석자들이 각자의 경험을 공유하고, 서로에게 도움이 되는 정보를 나누는 시간을 가졌습니다. 특히 **안전한 공간**에서의 대화가 중요하다는 점에 모두가 공감했습니다.
+
+더 자세한 내용은 [문의하기 페이지](./contact.html)를 통해 연락주시기 바랍니다.`,
+            slug: '2026-01-regular-meeting',
+            published: true,
+            category: '모임'
+          },
+          {
+            title: '커뮤니티 상담 서비스 시작',
+            date: '2026-01-10',
+            summary: '성소수자 커뮤니티를 위한 상담 서비스를 시작했습니다.',
+            body: `성소수자 커뮤니티를 위한 상담 서비스를 시작하게 되었습니다.
+
+## 서비스 개요
+
+이 서비스는 다음과 같은 특징을 가지고 있습니다:
+
+- **비밀 보장**: 모든 상담 내용은 철저히 비밀로 보장됩니다
+- **무료 제공**: 경제적 부담 없이 이용하실 수 있습니다
+- **전문 상담**: 경험이 풍부한 상담사가 도와드립니다
+
+## 이용 방법
+
+상담을 원하시는 분은 [문의하기 페이지](./contact.html)를 통해 연락주시기 바랍니다.`,
+            slug: '2026-01-counseling-service',
+            published: true,
+            category: '서비스'
+          },
+          {
+            title: '2025년 12월 연말 모임',
+            date: '2025-12-28',
+            summary: '연말을 맞아 단체 회원들과 함께 모임을 가졌습니다.',
+            body: `연말을 맞아 단체 회원들과 함께 뜻깊은 모임을 가졌습니다.
+
+## 모임 내용
+
+이번 연말 모임에서는:
+
+- 올해 활동을 돌아보는 시간
+- 내년 계획에 대한 논의
+- 회원들 간의 친목 도모
+
+등의 시간을 가졌습니다.
+
+모든 참석자분들께 감사드립니다!`,
+            slug: '2025-12-year-end-meeting',
+            published: true,
+            category: '모임'
+          }
+        ];
+
+        // 실제 구현에서는 여기서 노션 API 호출 또는 JSON 파일 로드
+        // const response = await fetch('./data/activities.json');
+        // const data = await response.json();
+        // resolve(data);
+
+        resolve(testData);
+      }, 300); // 시뮬레이션 지연
+    });
+  }
+
+  /**
+   * 메인 초기화 함수
+   * 
+   * Story 1.4: 고유 URL 및 라우팅
+   * Story 1.5: SEO 최적화
+   * Story 1.6: 네비게이션 및 외부 링크
+   * 라우터를 초기화하고 초기 라우트를 렌더링합니다.
+   */
+  function init() {
+    // 링크 처리 초기화 (네비게이션 및 외부 링크)
+    if (initLinks) {
+      initLinks();
+    }
+
+    // SEO 초기화 (기본값)
+    if (initSEO) {
+      initSEO();
+    }
+
+    // 라우터가 있으면 사용
+    if (initRouter) {
+      // 라우터 초기화 (라우트 변경 시 renderRoute 호출)
+      initRouter(renderRoute);
+    } else {
+      // 라우터가 없으면 기존 방식 사용 (하위 호환성)
+      const slug = getActivitySlugFromUrl ? getActivitySlugFromUrl() : null;
+      renderRoute(slug);
+    }
+  }
+
+  // DOM 로드 완료 후 초기화
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+

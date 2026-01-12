@@ -3,7 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="빛청모의 다양한 활동과 소식을 공유하는 공간입니다." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="빛청모 | 활동공유" />
+  <meta property="og:description" content="빛청모의 다양한 활동과 소식을 공유하는 공간입니다." />
   <meta property="og:image" content="./assets/img/logo.jpg" />
+  <meta property="og:url" content="./activities.html" />
+  <meta property="og:locale" content="ko_KR" />
   <title>빛청모 | 활동공유</title>
 
   <link rel="icon" href="./assets/img/logo.jpg" sizes="any" />
@@ -26,7 +32,7 @@
       <nav class="nav" id="siteNav" aria-label="주요 메뉴">
         <a class="nav-link" href="./index.html">홈</a>
         <a class="nav-link" href="./about.html">단체 소개</a>
-        <a class="nav-link" href="./activities.html">활동공유</a>
+        <a class="nav-link is-active" href="./activities.html">활동공유</a>
         <a class="nav-link" href="./contact.html">문의하기</a>
       </nav>
 
@@ -58,9 +64,8 @@
       </p>
     </section>
 
-    <section class="card content">
-      <h2>최근 활동</h2>
-      <p>활동 내용이 여기에 표시됩니다.</p>
+    <section id="activities-list" class="activities-container">
+      <!-- 활동 목록이 여기에 동적으로 렌더링됩니다 -->
     </section>
 
     <section class="quick-links" aria-label="빠른 이동">
@@ -83,9 +88,16 @@
   <script src="./assets/js/30_disclosure.js"></script>
   <script src="./assets/js/10_toast.js"></script>
   <script src="./assets/js/20_modal.js"></script>
+  <script src="./assets/js/60_activities_data.js"></script>
+  <script src="./assets/js/70_activities_list.js"></script>
+  <script src="./assets/js/75_activities_detail.js"></script>
+  <script src="./assets/js/77_activities_router.js"></script>
+  <script src="./assets/js/78_activities_seo.js"></script>
+  <script src="./assets/js/79_activities_links.js"></script>
   <script src="./assets/js/99_main.js"></script>
   <script src="./assets/js/40_theme.js"></script>
   <script src="./assets/js/50_mobile_menu.js"></script>
+  <script src="./assets/js/80_activities_init.js"></script>
 
 </body>
 </html>

@@ -189,6 +189,199 @@
 }
 
 /* =========================
+   Activities List
+========================= */
+.activities-container{
+  margin: 1rem 0 1.25rem 0;
+}
+
+.activity-card{
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.activity-card:hover{
+  box-shadow: var(--shadow-2);
+}
+
+.activity-header{
+  margin-bottom: 0.75rem;
+}
+
+.activity-title{
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: normal;
+}
+
+.activity-link{
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.activity-link:hover{
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.activity-date{
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-shadow);
+  margin-bottom: 0.5rem;
+}
+
+.activity-summary{
+  margin-top: 0.5rem;
+}
+
+.activity-summary p{
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* =========================
+   Activity Detail Page
+========================= */
+.activity-detail{
+  margin-bottom: 1rem;
+}
+
+.activity-detail-header{
+  margin-bottom: 1.5rem;
+}
+
+.activity-detail-meta{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.activity-category{
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--text-shadow);
+  font-size: 0.85rem;
+  border-radius: 0.2rem;
+}
+
+.activity-detail-date{
+  font-size: 0.9rem;
+  color: var(--text-shadow);
+}
+
+.activity-detail-title{
+  margin: 0 0 0.75rem 0;
+  font-size: 1.75rem;
+  font-weight: normal;
+  line-height: 1.4;
+}
+
+.activity-detail-summary{
+  font-size: 1.1rem;
+  color: var(--text-shadow);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.activity-image{
+  margin: 1.5rem 0;
+}
+
+.activity-image img{
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 0.1rem solid var(--text-shadow);
+}
+
+.activity-detail-body{
+  margin: 1.5rem 0;
+  line-height: 1.8;
+}
+
+.activity-detail-body h1,
+.activity-detail-body h2,
+.activity-detail-body h3{
+  margin: 1.5rem 0 0.75rem 0;
+  font-weight: normal;
+}
+
+.activity-detail-body h1{
+  font-size: 1.5rem;
+}
+
+.activity-detail-body h2{
+  font-size: 1.3rem;
+}
+
+.activity-detail-body h3{
+  font-size: 1.1rem;
+}
+
+.activity-detail-body p{
+  margin: 0 0 1rem 0;
+}
+
+.activity-detail-body ul,
+.activity-detail-body ol{
+  margin: 0 0 1rem 1.5rem;
+  padding: 0;
+}
+
+.activity-detail-body li{
+  margin: 0.5rem 0;
+}
+
+.activity-detail-body code{
+  background-color: var(--text-shadow);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.2rem;
+  font-size: 0.9em;
+}
+
+.activity-detail-body pre{
+  background-color: var(--text-shadow);
+  padding: 1rem;
+  border-radius: 0.2rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.activity-detail-body pre code{
+  background-color: transparent;
+  padding: 0;
+}
+
+.activity-detail-body a{
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.activity-detail-body a:hover{
+  text-decoration: none;
+}
+
+.activity-detail-body strong{
+  font-weight: bold;
+}
+
+.activity-detail-body em{
+  font-style: italic;
+}
+
+.activity-detail-footer{
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 0.1rem solid var(--text-shadow);
+}
+
+/* =========================
    Diff grid (optional)
 ========================= */
 .diff{
