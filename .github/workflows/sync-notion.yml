@@ -6,11 +6,12 @@ on:
     - cron: '*/30 * * * *'
   # 수동 실행
   workflow_dispatch:
-  # main 브랜치에 푸시 시 (선택적)
+  # 브랜치에 푸시 시 (선택적)
   push:
     branches:
       - main
-      - feed  # 현재 브랜치도 포함
+      - feed
+      - pr-sync  # PR 동기화 브랜치
     paths:
       - '.github/workflows/sync-notion.yml'
 
