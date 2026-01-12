@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const NotionClient = require('./notion-client');
+const { Client } = require('@notionhq/client');
 const { transformNotionPage } = require('./notion-transformer');
 
 // 환경 변수 확인 및 검증
@@ -78,15 +78,43 @@ async function fetchNotionData() {
   try {
     console.log('Connecting to Notion API...');
     
-    // 노션 클라이언트 생성
-    const client = new NotionClient(NOTION_API_KEY);
+    // Notion SDK 클라이언트 생성
+    const notion = new Client({ auth: NOTION_API_KEY });
     
     // 데이터베이스에서 모든 페이지 가져오기
     // 하이픈 제거한 ID 사용 (Notion API는 하이픈 있음/없음 모두 허용하지만 일관성 유지)
     // 중요: 실제 변수는 전체 ID를 사용하고, 로그에서만 마스킹
     const cleanDatabaseId = NOTION_DATABASE_ID.replace(/-/g, '');
+    
+    // 디버깅: DB_ID 검증 로그
+    console.log('DB_ID length:', cleanDatabaseId.length);
+    console.log('DB_ID raw endsWith:', cleanDatabaseId.slice(-6));
+    console.log('DB_ID has dots:', cleanDatabaseId.includes('...'));
+    
+    if (cleanDatabaseId.length !== 32) {
+      throw new Error(`Invalid database ID length: expected 32, got ${cleanDatabaseId.length}`);
+    }
+    
     console.log(`Querying database (ID length: ${cleanDatabaseId.length}): ${cleanDatabaseId.substring(0, 8)}...`);
-    const pages = await client.queryDatabase(cleanDatabaseId);
+    
+    // Notion SDK를 사용한 안전한 호출
+    const notion = new Client({ auth: NOTION_API_KEY });
+    const allPages = [];
+    let hasMore = true;
+    let startCursor = null;
+    
+    while (hasMore) {
+      const response = await notion.databases.query({
+        database_id: cleanDatabaseId,
+        start_cursor: startCursor || undefined,
+      });
+      
+      allPages.push(...response.results);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor;
+    }
+    
+    const pages = allPages;
     console.log(`Found ${pages.length} pages in database`);
     
     if (pages.length === 0) {
@@ -127,7 +155,22 @@ async function fetchNotionData() {
         
         // 페이지 블록 가져오기 (본문 콘텐츠)
         console.log(`Fetching blocks for page: ${page.id.substring(0, 8)}...`);
-        const blocks = await client.getPageBlocks(page.id);
+        const allBlocks = [];
+        let hasMoreBlocks = true;
+        let blockCursor = null;
+        
+        while (hasMoreBlocks) {
+          const blockResponse = await notion.blocks.children.list({
+            block_id: page.id,
+            start_cursor: blockCursor || undefined,
+          });
+          
+          allBlocks.push(...blockResponse.results);
+          hasMoreBlocks = blockResponse.has_more;
+          blockCursor = blockResponse.next_cursor;
+        }
+        
+        const blocks = allBlocks;
         console.log(`  Found ${blocks.length} blocks`);
         
         // 페이지를 활동 데이터로 변환
