@@ -209,11 +209,13 @@
     const formattedDate = formatDateKorean(date);
     const renderedBody = renderBody(body);
 
+    // Story 3.3: 스크린 리더 접근성 - 이미지 alt 텍스트 개선
     let imageHtml = '';
     if (image) {
+      const imageAlt = `${escapeHtml(title)} 활동 이미지`;
       imageHtml = `
-        <div class="activity-image">
-          <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" loading="lazy">
+        <div class="activity-image" role="img" aria-label="${imageAlt}">
+          <img src="${escapeHtml(image)}" alt="${imageAlt}" loading="lazy">
         </div>
       `;
     }
@@ -223,24 +225,25 @@
       categoryHtml = `<span class="activity-category">${escapeHtml(category)}</span>`;
     }
 
+    // Story 3.3: 스크린 리더 접근성 - 상세 페이지 ARIA 속성
     return `
-      <article class="card activity-detail" data-activity-slug="${slug}">
+      <article class="card activity-detail" data-activity-slug="${slug}" aria-labelledby="detail-title-${slug}">
         <header class="activity-detail-header">
-          <div class="activity-detail-meta">
-            ${categoryHtml}
-            <time class="activity-detail-date" datetime="${date.toISOString()}">
+          <div class="activity-detail-meta" aria-label="활동 메타 정보">
+            ${categoryHtml ? `<span class="activity-category" aria-label="카테고리: ${escapeHtml(category)}">${escapeHtml(category)}</span>` : ''}
+            <time class="activity-detail-date" datetime="${date.toISOString()}" aria-label="활동 날짜: ${formattedDate}">
               ${formattedDate}
             </time>
           </div>
-          <h1 class="activity-detail-title">${escapeHtml(title)}</h1>
-          ${summary ? `<p class="activity-detail-summary">${escapeHtml(summary)}</p>` : ''}
+          <h1 class="activity-detail-title" id="detail-title-${slug}">${escapeHtml(title)}</h1>
+          ${summary ? `<p class="activity-detail-summary" aria-label="활동 요약">${escapeHtml(summary)}</p>` : ''}
         </header>
         ${imageHtml}
-        <div class="activity-detail-body">
+        <div class="activity-detail-body" aria-label="활동 본문">
           ${renderedBody}
         </div>
-        <footer class="activity-detail-footer">
-          <a href="./activities.html" class="btn">목록으로 돌아가기</a>
+        <footer class="activity-detail-footer" aria-label="활동 상세 페이지 푸터">
+          <a href="./activities.html" class="btn" aria-label="활동 목록으로 돌아가기">목록으로 돌아가기</a>
         </footer>
       </article>
     `;
@@ -295,6 +298,7 @@
 
   /**
    * 에러 상태 표시
+   * Story 3.3: 스크린 리더 접근성 - 에러 상태 알림
    * @param {HTMLElement|string} container - 컨테이너 요소 또는 선택자
    * @param {string} message - 에러 메시지
    */
@@ -304,10 +308,10 @@
 
     if (containerEl) {
       containerEl.innerHTML = `
-        <div class="card content">
+        <div class="card content" role="alert" aria-live="assertive" aria-label="오류 발생">
           <p>활동 상세 내용을 불러오는 중 오류가 발생했습니다.</p>
           ${message ? `<p class="small">${escapeHtml(message)}</p>` : ''}
-          <a href="./activities.html" class="btn">목록으로 돌아가기</a>
+          <a href="./activities.html" class="btn" aria-label="활동 목록으로 돌아가기">목록으로 돌아가기</a>
         </div>
       `;
     }

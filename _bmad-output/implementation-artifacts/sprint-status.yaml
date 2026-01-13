@@ -51,18 +51,18 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: 노션 연동 및 자동 동기화
-  epic-2: in-progress
+  epic-2: done
   2-1-노션-데이터-소스-연결-및-인증-설정: done
   2-2-노션-데이터-가져오기-및-변환: done
-  2-3-자동-동기화-메커니즘-구현: backlog
-  2-4-에러-처리-및-폴백-메커니즘: backlog
-  2-5-운영자-경험-개선: backlog
+  2-3-자동-동기화-메커니즘-구현: done
+  2-4-에러-처리-및-폴백-메커니즘: done
+  2-5-운영자-경험-개선: done
   epic-2-retrospective: optional
 
   # Epic 3: 접근성 및 사용성
-  epic-3: backlog
-  3-1-키보드-접근성-구현: backlog
-  3-2-모바일-반응형-디자인-구현: backlog
-  3-3-스크린-리더-접근성-구현: backlog
+  epic-3: done
+  3-1-키보드-접근성-구현: done
+  3-2-모바일-반응형-디자인-구현: done
+  3-3-스크린-리더-접근성-구현: done
   epic-3-retrospective: optional
 

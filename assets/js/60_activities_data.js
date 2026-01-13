@@ -46,30 +46,47 @@
 
   /**
    * 날짜를 표준 형식으로 변환
+   * Story 2.4: 잘못된 형식 데이터 처리 강화
+   * 
    * @param {string|Date|number} dateInput - 날짜 입력값
    * @returns {Date|null} 변환된 Date 객체 또는 null
    */
   function parseDate(dateInput) {
     if (!dateInput) return null;
     
-    // 이미 Date 객체인 경우
-    if (dateInput instanceof Date) {
-      return isNaN(dateInput.getTime()) ? null : dateInput;
+    try {
+      // 이미 Date 객체인 경우
+      if (dateInput instanceof Date) {
+        return isNaN(dateInput.getTime()) ? null : dateInput;
+      }
+      
+      // 숫자 타임스탬프인 경우
+      if (typeof dateInput === 'number') {
+        const date = new Date(dateInput);
+        return isNaN(date.getTime()) ? null : date;
+      }
+      
+      // 문자열인 경우 (ISO 형식 또는 기타 형식)
+      if (typeof dateInput === 'string') {
+        // 빈 문자열 체크
+        if (dateInput.trim() === '') return null;
+        
+        // ISO 형식 문자열 처리
+        const date = new Date(dateInput);
+        if (isNaN(date.getTime())) {
+          // ISO 형식이 아닌 경우 시도
+          console.warn(`Invalid date format: "${dateInput}", attempting alternative parsing`);
+          return null;
+        }
+        return date;
+      }
+      
+      return null;
+    } catch (error) {
+      // Story 2.4: 예외 처리 강화
+      console.warn('Date parsing error:', error.message, 'Input:', dateInput);
+      return null;
     }
-    
-    // 숫자 타임스탬프인 경우
-    if (typeof dateInput === 'number') {
-      const date = new Date(dateInput);
-      return isNaN(date.getTime()) ? null : date;
-    }
-    
-    // 문자열인 경우
-    if (typeof dateInput === 'string') {
-      const date = new Date(dateInput);
-      return isNaN(date.getTime()) ? null : date;
-    }
-    
-    return null;
   }
 
   /**
@@ -90,6 +107,8 @@
 
   /**
    * 활동 데이터 파싱 및 검증
+   * Story 2.4: 잘못된 형식 데이터 처리 강화
+   * 
    * @param {Object} rawData - 노션에서 가져온 원시 데이터
    * @returns {ParseResult} 파싱 결과
    */
@@ -101,20 +120,53 @@
       isValid: false
     };
 
-    if (!rawData || typeof rawData !== 'object') {
+    // Story 2.4: 잘못된 형식 데이터 처리
+    if (!rawData) {
+      result.errors.push('활동 데이터가 없습니다.');
+      return result;
+    }
+    
+    if (typeof rawData !== 'object' || Array.isArray(rawData)) {
       result.errors.push('활동 데이터가 유효한 객체가 아닙니다.');
       return result;
     }
 
-    // 필수 필드 검증 및 추출
-    const title = rawData.title || rawData.name || '';
-    const dateInput = rawData.date || rawData.created_time || rawData.last_edited_time;
-    const summary = rawData.summary || rawData.description || '';
-    const body = rawData.body || rawData.content || '';
-    const slug = rawData.slug || rawData.id || generateSlug(title);
-    const published = rawData.published !== undefined 
-      ? Boolean(rawData.published) 
-      : (rawData.public !== undefined ? Boolean(rawData.public) : true); // 기본값: 공개
+    try {
+      // 필수 필드 검증 및 추출 (안전한 추출)
+      const title = (rawData.title && typeof rawData.title === 'string') 
+        ? rawData.title 
+        : (rawData.name && typeof rawData.name === 'string' ? rawData.name : '');
+      
+      const dateInput = rawData.date || rawData.created_time || rawData.last_edited_time;
+      
+      const summary = (rawData.summary && typeof rawData.summary === 'string')
+        ? rawData.summary
+        : (rawData.description && typeof rawData.description === 'string' ? rawData.description : '');
+      
+      const body = (rawData.body && typeof rawData.body === 'string')
+        ? rawData.body
+        : (rawData.content && typeof rawData.content === 'string' ? rawData.content : '');
+      
+      const slug = (rawData.slug && typeof rawData.slug === 'string')
+        ? rawData.slug
+        : (rawData.id && typeof rawData.id === 'string' ? rawData.id : generateSlug(title));
+      
+      // Story 2.4: published 필드 안전하게 처리
+      let published = true; // 기본값: 공개
+      if (rawData.published !== undefined) {
+        if (typeof rawData.published === 'boolean') {
+          published = rawData.published;
+        } else if (typeof rawData.published === 'string') {
+          // 문자열인 경우 변환
+          published = rawData.published.toLowerCase() === 'true' || rawData.published === '1';
+        }
+      } else if (rawData.public !== undefined) {
+        if (typeof rawData.public === 'boolean') {
+          published = rawData.public;
+        } else if (typeof rawData.public === 'string') {
+          published = rawData.public.toLowerCase() === 'true' || rawData.public === '1';
+        }
+      }
 
     // 필수 필드 검증
     if (!title || title.trim() === '') {
@@ -143,37 +195,55 @@
       return result;
     }
 
-    // 선택적 필드 추출
-    const image = rawData.image || rawData.cover || null;
-    const attachments = Array.isArray(rawData.attachments) 
-      ? rawData.attachments 
-      : (rawData.attachments ? [rawData.attachments] : []);
-    const category = rawData.category || rawData.type || null;
-    const metadata = rawData.metadata || {};
-
-    // 파싱된 데이터 구성
-    result.data = {
-      // 필수 필드
-      title: title.trim(),
-      date: parsedDate,
-      summary: summary.trim() || title.trim(), // 요약이 없으면 제목 사용
-      body: body.trim() || summary.trim() || title.trim(), // 본문이 없으면 요약 또는 제목 사용
-      slug: slug.trim(),
-      published: published,
+      // 선택적 필드 추출 (안전하게)
+      const image = (rawData.image && typeof rawData.image === 'string') 
+        ? rawData.image 
+        : (rawData.cover && typeof rawData.cover === 'string' ? rawData.cover : null);
       
-      // 선택적 필드
-      image: image,
-      attachments: attachments,
-      category: category,
-      metadata: {
-        ...metadata,
-        createdAt: rawData.created_time || parsedDate,
-        updatedAt: rawData.last_edited_time || parsedDate
+      let attachments = [];
+      if (Array.isArray(rawData.attachments)) {
+        attachments = rawData.attachments.filter(item => typeof item === 'string');
+      } else if (rawData.attachments && typeof rawData.attachments === 'string') {
+        attachments = [rawData.attachments];
       }
-    };
+      
+      const category = (rawData.category && typeof rawData.category === 'string')
+        ? rawData.category
+        : (rawData.type && typeof rawData.type === 'string' ? rawData.type : null);
+      
+      const metadata = (rawData.metadata && typeof rawData.metadata === 'object' && !Array.isArray(rawData.metadata))
+        ? rawData.metadata
+        : {};
 
-    result.isValid = true;
-    return result;
+      // 파싱된 데이터 구성
+      result.data = {
+        // 필수 필드
+        title: String(title).trim(),
+        date: parsedDate,
+        summary: String(summary).trim() || String(title).trim(), // 요약이 없으면 제목 사용
+        body: String(body).trim() || String(summary).trim() || String(title).trim(), // 본문이 없으면 요약 또는 제목 사용
+        slug: String(slug).trim(),
+        published: Boolean(published),
+        
+        // 선택적 필드
+        image: image,
+        attachments: attachments,
+        category: category,
+        metadata: {
+          ...metadata,
+          createdAt: rawData.created_time || parsedDate,
+          updatedAt: rawData.last_edited_time || parsedDate
+        }
+      };
+
+      result.isValid = true;
+      return result;
+    } catch (error) {
+      // Story 2.4: 예외 처리 강화
+      result.errors.push(`데이터 파싱 중 오류 발생: ${error.message}`);
+      console.error('Activity data parsing error:', error, 'Raw data:', rawData);
+      return result;
+    }
   }
 
   /**

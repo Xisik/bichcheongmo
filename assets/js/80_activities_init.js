@@ -17,6 +17,7 @@
 
   // 활동 데이터 캐시
   let cachedActivities = null;
+  let cachedMetadata = null;
 
   /**
    * 활동 상세 페이지 렌더링
@@ -44,6 +45,11 @@
       if (cachedActivities) {
         const sorted = sortActivitiesByDate(cachedActivities);
         renderActivityList(sorted, container);
+        // Story 2.4: 마지막 업데이트 시각 표시
+        if (cachedMetadata && cachedMetadata.syncStatus !== 'success') {
+          const lastUpdated = cachedMetadata.lastUpdated ? new Date(cachedMetadata.lastUpdated) : null;
+          showSyncStatus(cachedMetadata, lastUpdated);
+        }
         return;
       }
 
@@ -52,15 +58,24 @@
 
       // 데이터 로드
       loadActivitiesData()
-        .then(activities => {
-          const parsed = parseActivities(activities);
+        .then(result => {
+          const parsed = parseActivities(result.activities);
           cachedActivities = parsed;
+          cachedMetadata = result.metadata;
+          
           const sorted = sortActivitiesByDate(parsed);
           renderActivityList(sorted, container);
+          
+          // Story 2.4: 동기화 상태 및 마지막 업데이트 시각 표시
+          if (result.metadata) {
+            const lastUpdated = result.metadata.lastUpdated ? new Date(result.metadata.lastUpdated) : null;
+            showSyncStatus(result.metadata, lastUpdated);
+          }
         })
         .catch(error => {
           console.error('활동 목록 로드 실패:', error);
-          showErrorState(container, error.message || '활동 목록을 불러올 수 없습니다.');
+          const lastUpdated = cachedMetadata && cachedMetadata.lastUpdated ? new Date(cachedMetadata.lastUpdated) : null;
+          showErrorState(container, error.message || '활동 목록을 불러올 수 없습니다.', lastUpdated);
         });
       return;
     }
@@ -101,9 +116,10 @@
 
     // 데이터 로드
     loadActivitiesData()
-      .then(activities => {
-        const parsed = parseActivities(activities);
+      .then(result => {
+        const parsed = parseActivities(result.activities);
         cachedActivities = parsed;
+        cachedMetadata = result.metadata;
         
         const activity = findActivityBySlug(parsed, slug);
         
@@ -148,11 +164,12 @@
    * 
    * Story 2.1: 노션 데이터 소스 연결 및 인증 설정
    * Story 2.2: 노션 데이터 가져오기 및 변환
+   * Story 2.4: 에러 처리 및 폴백 메커니즘
    * 
    * GitHub Actions에서 노션 데이터를 동기화하여 생성한 JSON 파일을 로드합니다.
    * 클라이언트 사이드에서는 인증 정보 없이 공개 JSON 파일만 읽습니다.
    * 
-   * @returns {Promise<Array>} 활동 데이터 배열
+   * @returns {Promise<Object>} { activities: Array, metadata: Object } 형태의 데이터
    */
   function loadActivitiesData() {
     // GitHub Actions에서 생성한 JSON 파일 로드
@@ -162,15 +179,52 @@
         if (!response.ok) {
           // JSON 파일이 없거나 에러인 경우 테스트 데이터 사용 (폴백)
           console.warn('활동 데이터 파일을 찾을 수 없습니다. 테스트 데이터를 사용합니다.');
-          return getTestData();
+          return getTestData().then(testData => ({
+            activities: testData,
+            metadata: {
+              lastUpdated: null,
+              syncStatus: 'fallback',
+              errorMessage: 'Data file not found, using test data'
+            }
+          }));
         }
-        return response.json();
+        return response.json().then(data => {
+          // Story 2.4: 새로운 형식 (메타데이터 포함) 또는 기존 형식 (배열) 지원
+          if (data.activities && data._metadata) {
+            // 새로운 형식
+            return {
+              activities: data.activities,
+              metadata: data._metadata
+            };
+          } else if (Array.isArray(data)) {
+            // 기존 형식 (배열)
+            return {
+              activities: data,
+              metadata: {
+                lastUpdated: null,
+                syncStatus: 'unknown',
+                errorMessage: null
+              }
+            };
+          } else {
+            // 잘못된 형식
+            console.error('Invalid data format:', data);
+            throw new Error('Invalid data format');
+          }
+        });
       })
       .catch(error => {
         console.error('활동 데이터 로드 실패:', error);
         // 에러 발생 시 테스트 데이터 사용 (폴백)
         console.warn('테스트 데이터를 사용합니다.');
-        return getTestData();
+        return getTestData().then(testData => ({
+          activities: testData,
+          metadata: {
+            lastUpdated: null,
+            syncStatus: 'fallback',
+            errorMessage: `Data load failed: ${error.message}`
+          }
+        }));
       });
   }
 
@@ -260,6 +314,38 @@
         resolve(testData);
       }, 300); // 시뮬레이션 지연
     });
+  }
+
+  /**
+   * 동기화 상태 표시 (Story 2.4: 에러 처리 및 폴백 메커니즘)
+   * @param {Object} metadata - 메타데이터
+   * @param {Date} lastUpdated - 마지막 업데이트 시각
+   */
+  function showSyncStatus(metadata, lastUpdated) {
+    if (!metadata || metadata.syncStatus === 'success') {
+      return; // 성공 시 표시하지 않음
+    }
+    
+    const { formatDateKorean } = ui.activities.list || {};
+    const toast = ui.toast || {};
+    
+    let message = '';
+    if (metadata.syncStatus === 'partial') {
+      message = '일부 데이터를 불러오지 못했습니다.';
+    } else if (metadata.syncStatus === 'error' || metadata.syncStatus === 'fallback') {
+      message = '최신 데이터를 불러오지 못했습니다. 캐시된 데이터를 표시합니다.';
+    }
+    
+    if (lastUpdated && formatDateKorean) {
+      const formattedDate = formatDateKorean(lastUpdated);
+      message += ` (마지막 업데이트: ${formattedDate})`;
+    }
+    
+    if (message && toast.show) {
+      toast.show(message, 'warning', 5000);
+    } else if (message) {
+      console.warn('Sync status:', message);
+    }
   }
 
   /**

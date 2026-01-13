@@ -47,10 +47,10 @@
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noopener noreferrer');
       
-      // 접근성을 위한 aria-label 추가 (이미 있는 경우 건너뛰기)
+      // Story 3.3: 스크린 리더 접근성 - 외부 링크 aria-label 개선
       if (!link.getAttribute('aria-label')) {
-        const linkText = link.textContent.trim();
-        link.setAttribute('aria-label', `${linkText} (새 창에서 열림)`);
+        const linkText = link.textContent.trim() || link.getAttribute('title') || '링크';
+        link.setAttribute('aria-label', `${linkText}, 새 창에서 열림`);
       }
     }
   }

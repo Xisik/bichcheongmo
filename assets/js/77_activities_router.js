@@ -178,6 +178,7 @@
 
   /**
    * 잘못된 URL 접근 시 에러 페이지 표시
+   * Story 3.3: 스크린 리더 접근성 - 에러 상태 알림
    * @param {HTMLElement|string} container - 컨테이너 요소 또는 선택자
    * @param {string} [message] - 에러 메시지
    */
@@ -187,11 +188,11 @@
 
     if (containerEl) {
       containerEl.innerHTML = `
-        <div class="card content">
+        <div class="card content" role="alert" aria-live="assertive" aria-label="활동을 찾을 수 없음">
           <h2>활동을 찾을 수 없습니다</h2>
           <p>요청하신 활동이 존재하지 않거나 삭제되었을 수 있습니다.</p>
           ${message ? `<p class="small">${escapeHtml(message)}</p>` : ''}
-          <a href="./activities.html" class="btn">목록으로 돌아가기</a>
+          <a href="./activities.html" class="btn" aria-label="활동 목록으로 돌아가기">목록으로 돌아가기</a>
         </div>
       `;
     }

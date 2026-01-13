@@ -43,17 +43,18 @@
     // 상세 페이지 링크 (Story 1.4에서 구현 예정, 현재는 #으로)
     const detailUrl = `./activities.html?activity=${encodeURIComponent(slug)}`;
 
+    // Story 3.3: 스크린 리더 접근성 - ARIA 레이블 및 시맨틱 구조
     return `
-      <article class="card activity-card" data-activity-slug="${slug}">
+      <article class="card activity-card" data-activity-slug="${slug}" aria-labelledby="activity-title-${slug}">
         <header class="activity-header">
-          <h3 class="activity-title">
-            <a href="${detailUrl}" class="activity-link">${escapeHtml(title)}</a>
+          <h3 class="activity-title" id="activity-title-${slug}">
+            <a href="${detailUrl}" class="activity-link" aria-label="${escapeHtml(title)} - 상세 보기">${escapeHtml(title)}</a>
           </h3>
-          <time class="activity-date" datetime="${date.toISOString()}">
+          <time class="activity-date" datetime="${date.toISOString()}" aria-label="활동 날짜: ${formattedDate}">
             ${formattedDate}
           </time>
         </header>
-        <div class="activity-summary">
+        <div class="activity-summary" aria-label="활동 요약">
           <p>${escapeHtml(summary)}</p>
         </div>
       </article>
@@ -77,11 +78,12 @@
 
   /**
    * 빈 상태 메시지 HTML 생성
+   * Story 3.3: 스크린 리더 접근성 - 빈 상태 알림
    * @returns {string} 빈 상태 메시지 HTML
    */
   function createEmptyState() {
     return `
-      <div class="card content">
+      <div class="card content" role="status" aria-live="polite" aria-label="활동 목록이 비어있음">
         <p>아직 등록된 활동이 없습니다.</p>
         <p class="small">곧 새로운 활동을 공유할 예정입니다.</p>
       </div>
@@ -90,11 +92,12 @@
 
   /**
    * 로딩 상태 메시지 HTML 생성
+   * Story 3.3: 스크린 리더 접근성 - 로딩 상태 알림
    * @returns {string} 로딩 상태 메시지 HTML
    */
   function createLoadingState() {
     return `
-      <div class="card content">
+      <div class="card content" role="status" aria-live="polite" aria-label="활동 목록 로딩 중">
         <p>활동 목록을 불러오는 중...</p>
       </div>
     `;
@@ -102,6 +105,7 @@
 
   /**
    * 에러 상태 메시지 HTML 생성
+   * Story 3.3: 스크린 리더 접근성 - 에러 상태 알림
    * @param {string} message - 에러 메시지
    * @param {Date} [lastUpdated] - 마지막 업데이트 시각
    * @returns {string} 에러 상태 메시지 HTML
@@ -114,7 +118,7 @@
     }
 
     return `
-      <div class="card content">
+      <div class="card content" role="alert" aria-live="assertive" aria-label="오류 발생">
         <p>활동 목록을 불러오는 중 오류가 발생했습니다.</p>
         ${message ? `<p class="small">${escapeHtml(message)}</p>` : ''}
         ${lastUpdatedText}
@@ -125,6 +129,7 @@
 
   /**
    * 활동 목록을 DOM에 렌더링
+   * Story 3.3: 스크린 리더 접근성 - 목록 구조 명확화
    * @param {Array<Object>} activities - 활동 데이터 배열
    * @param {HTMLElement|string} container - 렌더링할 컨테이너 요소 또는 선택자
    * @returns {boolean} 렌더링 성공 여부
@@ -138,6 +143,12 @@
       return false;
     }
 
+    // Story 3.3: 컨테이너에 ARIA 속성 추가 (article 요소들이 이미 시맨틱하므로 role="list"는 불필요)
+    // article 요소는 자체적으로 시맨틱하므로 role을 추가하지 않음
+    if (!containerEl.hasAttribute('aria-label')) {
+      containerEl.setAttribute('aria-label', '활동 목록');
+    }
+
     // 기존 내용 제거
     containerEl.innerHTML = '';
 
@@ -146,6 +157,9 @@
       containerEl.innerHTML = createEmptyState();
       return true;
     }
+
+    // Story 3.3: 활동 개수 알림
+    containerEl.setAttribute('aria-label', `활동 목록, 총 ${activities.length}개`);
 
     // 활동 목록 렌더링
     const activitiesHtml = activities

@@ -49,10 +49,14 @@ async function fetchNotionData() {
     console.log(`Found ${pages.length} pages in database`);
     
     if (pages.length === 0) {
-      console.log('WARNING: No pages found in database. Please check:');
-      console.log('  1. Notion Integration is connected to the database');
-      console.log('  2. Database has at least one page');
-      console.log('  3. Database ID is correct');
+      // Story 2.5: 운영자 친화적인 안내 메시지
+      console.log('\n⚠️  데이터베이스에서 페이지를 찾을 수 없습니다.');
+      console.log('   다음을 확인해주세요:');
+      console.log('   1. 노션 통합(Integration)이 데이터베이스에 연결되어 있는지 확인');
+      console.log('   2. 데이터베이스에 최소 하나의 페이지가 있는지 확인');
+      console.log('   3. GitHub Secrets의 NOTION_DATABASE_ID가 올바른지 확인');
+      console.log('   4. 데이터베이스 URL에서 ID 확인: https://www.notion.so/.../{database_id}?v=...');
+      console.log('');
     }
     
     // 각 페이지를 활동 데이터로 변환
@@ -96,11 +100,21 @@ async function fetchNotionData() {
           activities.push(activity);
           console.log(`✓ Transformed: ${activity.title}`);
         } else {
-          console.log(`✗ Skipped page ${page.id.substring(0, 8)}: missing required fields`);
+          // Story 2.5: 운영자 친화적인 에러 메시지
+          console.log(`\n⚠️  활동이 건너뛰어졌습니다 (페이지 ID: ${page.id.substring(0, 8)}...)`);
+          console.log(`   이유: 필수 필드(제목 또는 날짜)가 누락되었습니다.`);
+          console.log(`   해결 방법:`);
+          console.log(`   1. 노션 페이지에서 "제목" 필드가 있는지 확인하세요`);
+          console.log(`   2. "날짜" 필드가 올바르게 설정되어 있는지 확인하세요`);
+          console.log(`   3. 필드명이 "제목", "Title", "날짜", "Date" 중 하나인지 확인하세요`);
+          
           // 디버깅: 속성 정보 출력
           if (page.properties) {
-            console.log(`  Available properties: ${Object.keys(page.properties).join(', ')}`);
+            const availableProps = Object.keys(page.properties);
+            console.log(`   현재 페이지의 필드: ${availableProps.join(', ')}`);
+            console.log(`   참고: 필드명은 대소문자와 공백을 무시하고 인식됩니다.`);
           }
+          console.log(``);
         }
       } catch (error) {
         console.error(`ERROR: Failed to process page ${page.id.substring(0, 8)}:`, error.message);
@@ -113,14 +127,25 @@ async function fetchNotionData() {
     return activities;
     
   } catch (error) {
+    // Story 2.4: 에러 로깅 강화
+    const errorDetails = {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      type: 'NotionAPIError'
+    };
+    
     console.error('ERROR: Failed to fetch Notion data:', error.message);
+    console.error('  Error details:', JSON.stringify(errorDetails, null, 2));
     
     // 폴백: 기존 데이터 파일이 있으면 사용
     const dataPath = path.join(__dirname, '..', 'data', 'activities.json');
     if (fs.existsSync(dataPath)) {
       try {
-        const existingData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        console.log(`WARNING: Using existing data file with ${existingData.length || 0} activities as fallback`);
+        const existingFile = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        // 새로운 형식 (메타데이터 포함) 또는 기존 형식 (배열) 지원
+        const existingData = existingFile.activities || existingFile;
+        console.log(`WARNING: Using existing data file with ${Array.isArray(existingData) ? existingData.length : 0} activities as fallback`);
         return existingData;
       } catch (fallbackError) {
         console.error('ERROR: Failed to read fallback data file:', fallbackError.message);
@@ -135,9 +160,12 @@ async function fetchNotionData() {
 
 /**
  * 활동 데이터를 JSON 파일로 저장
+ * Story 2.4: 에러 처리 및 폴백 메커니즘
+ * 
  * @param {Array} activities - 활동 데이터 배열
+ * @param {Object} [metadata] - 메타데이터 (마지막 업데이트 시각, 에러 정보 등)
  */
-function saveActivitiesData(activities) {
+function saveActivitiesData(activities, metadata = {}) {
   const dataDir = path.join(__dirname, '..', 'data');
   const dataPath = path.join(dataDir, 'activities.json');
   
@@ -146,35 +174,113 @@ function saveActivitiesData(activities) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
   
+  // 메타데이터와 함께 저장 (Story 2.4: 마지막 업데이트 시각, 에러 정보 포함)
+  const dataToSave = {
+    _metadata: {
+      lastUpdated: metadata.lastUpdated || new Date().toISOString(),
+      syncStatus: metadata.syncStatus || 'success',
+      errorMessage: metadata.errorMessage || null,
+      activitiesCount: Array.isArray(activities) ? activities.length : 0,
+      version: '1.0'
+    },
+    activities: Array.isArray(activities) ? activities : []
+  };
+  
   // JSON 파일로 저장
   fs.writeFileSync(
     dataPath,
-    JSON.stringify(activities, null, 2),
+    JSON.stringify(dataToSave, null, 2),
     'utf8'
   );
   
-  console.log(`SUCCESS: Saved ${activities.length} activities to ${dataPath}`);
+  console.log(`SUCCESS: Saved ${dataToSave.activities.length} activities to ${dataPath}`);
+  if (metadata.syncStatus === 'partial' || metadata.syncStatus === 'error') {
+    console.log(`WARNING: Sync completed with status: ${metadata.syncStatus}`);
+    if (metadata.errorMessage) {
+      console.log(`  Error: ${metadata.errorMessage}`);
+    }
+  }
 }
 
 /**
  * 메인 실행 함수
+ * Story 2.4: 에러 처리 및 폴백 메커니즘
  */
 async function main() {
+  const startTime = new Date();
+  let syncStatus = 'success';
+  let errorMessage = null;
+  let activities = [];
+  
   try {
     console.log('Starting Notion sync...');
     console.log(`NOTION_DATABASE_ID: ${NOTION_DATABASE_ID.substring(0, 8)}...`);
     
     // 노션에서 데이터 가져오기
-    const activities = await fetchNotionData();
+    activities = await fetchNotionData();
     
-    // JSON 파일로 저장
-    saveActivitiesData(activities);
+    // 데이터 검증 (Story 2.4: 잘못된 형식 데이터 처리)
+    if (!Array.isArray(activities)) {
+      console.warn('WARNING: Activities data is not an array, converting...');
+      activities = [];
+      syncStatus = 'partial';
+      errorMessage = 'Invalid data format: expected array';
+    }
     
-    console.log('Notion sync completed successfully');
+    // 빈 배열인 경우 경고
+    if (activities.length === 0) {
+      console.warn('WARNING: No activities found. This might indicate a problem.');
+      syncStatus = 'partial';
+      errorMessage = 'No activities found in database';
+    }
+    
   } catch (error) {
+    // Story 2.4: 에러 처리 강화
+    syncStatus = 'error';
+    errorMessage = error.message;
+    
     console.error('ERROR: Notion sync failed:', error.message);
-    console.error(error.stack);
-    process.exit(1);
+    console.error('  Stack:', error.stack);
+    
+    // 폴백: 기존 데이터 파일 읽기 시도
+    const dataPath = path.join(__dirname, '..', 'data', 'activities.json');
+    if (fs.existsSync(dataPath)) {
+      try {
+        const existingFile = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        activities = existingFile.activities || existingFile;
+        if (Array.isArray(activities) && activities.length > 0) {
+          console.log(`INFO: Using ${activities.length} cached activities as fallback`);
+          syncStatus = 'partial';
+          errorMessage = `Sync failed, using cached data: ${error.message}`;
+        }
+      } catch (fallbackError) {
+        console.error('ERROR: Failed to read fallback data:', fallbackError.message);
+      }
+    }
+    
+    // 완전 실패 시에도 빈 배열로 저장하여 페이지가 깨지지 않도록 함
+    if (!Array.isArray(activities)) {
+      activities = [];
+    }
+  } finally {
+    // Story 2.4: 메타데이터와 함께 저장 (성공/부분 성공/실패 모두)
+    const metadata = {
+      lastUpdated: new Date().toISOString(),
+      syncStatus: syncStatus,
+      errorMessage: errorMessage,
+      syncDuration: new Date() - startTime
+    };
+    
+    saveActivitiesData(activities, metadata);
+    
+    if (syncStatus === 'success') {
+      console.log('Notion sync completed successfully');
+    } else if (syncStatus === 'partial') {
+      console.log('Notion sync completed with warnings');
+    } else {
+      console.log('Notion sync failed, but fallback data saved');
+      // 에러가 있어도 프로세스는 종료하지 않음 (폴백 데이터 저장 완료)
+    }
   }
 }
 
