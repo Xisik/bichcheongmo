@@ -174,7 +174,10 @@
   function loadActivitiesData() {
     // GitHub Actions에서 생성한 JSON 파일 로드
     // 인증 정보는 GitHub Actions에서만 사용되며, 클라이언트에는 노출되지 않음
-    return fetch('./data/activities.json')
+    // 캐시 방지를 위한 타임스탬프 추가
+    const url = `./data/activities.json?t=${Date.now()}`;
+    
+    return fetch(url, { cache: "no-store" })
       .then(response => {
         if (!response.ok) {
           // JSON 파일이 없거나 에러인 경우 테스트 데이터 사용 (폴백)

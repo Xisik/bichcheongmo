@@ -1,7 +1,8 @@
 name: Sync Notion Activities
 
 on:
-  # 주기적 실행 (5분마다)
+  # 주기적 실행 (최소 5분마다 - GitHub Actions 제한)
+  # 참고: GitHub Actions는 스케줄 실행이 최소 5분 간격입니다
   schedule:
     - cron: '*/5 * * * *'
   # 수동 실행
