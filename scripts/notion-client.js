@@ -23,6 +23,17 @@ class NotionClient {
   }
 
   /**
+   * Notion ID에서 하이픈 제거 (URL에 사용하기 위해)
+   * @param {string} id - Notion ID (UUID 형식)
+   * @returns {string} 하이픈이 제거된 ID
+   */
+  formatNotionId(id) {
+    if (!id) return id;
+    // 하이픈 제거
+    return id.replace(/-/g, '');
+  }
+
+  /**
    * HTTP 요청 실행
    * @param {string} method - HTTP 메서드
    * @param {string} path - API 경로
@@ -81,13 +92,16 @@ class NotionClient {
     let hasMore = true;
     let startCursor = null;
 
+    // Database ID에서 하이픈 제거 (Notion API 요구사항)
+    const formattedDatabaseId = this.formatNotionId(databaseId);
+
     while (hasMore) {
       const requestBody = {};
       if (startCursor) {
         requestBody.start_cursor = startCursor;
       }
 
-      const response = await this.request('POST', `/databases/${databaseId}/query`, requestBody);
+      const response = await this.request('POST', `/databases/${formattedDatabaseId}/query`, requestBody);
       
       allPages.push(...response.results);
       hasMore = response.has_more;
@@ -107,8 +121,11 @@ class NotionClient {
     let hasMore = true;
     let startCursor = null;
 
+    // Page ID에서 하이픈 제거 (Notion API 요구사항)
+    const formattedPageId = this.formatNotionId(pageId);
+
     while (hasMore) {
-      const path = `/blocks/${pageId}/children${startCursor ? `?start_cursor=${startCursor}` : ''}`;
+      const path = `/blocks/${formattedPageId}/children${startCursor ? `?start_cursor=${startCursor}` : ''}`;
       const response = await this.request('GET', path);
       
       allBlocks.push(...response.results);
