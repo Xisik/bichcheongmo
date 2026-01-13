@@ -43,7 +43,7 @@ jobs:
           # 노션 데이터를 가져와서 JSON 파일로 저장하는 스크립트 실행
           node scripts/sync-notion.js
 
-      - name: Commit and push if changed
+      - name: Commit and push to notion-sync branch
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -51,4 +51,22 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: sync activities from Notion [skip ci]"
           # notion-sync 브랜치로만 push하여 충돌 방지
           git push origin HEAD:notion-sync || echo "No changes to commit"
+
+      - name: Sync to main branch
+        run: |
+          # main 브랜치 체크아웃
+          git fetch origin main:main || true
+          git checkout main || git checkout -b main
+          
+          # notion-sync 브랜치에서 data/activities.json 복사
+          git checkout notion-sync -- data/activities.json || echo "File not found in notion-sync branch"
+          
+          # 변경사항이 있으면 커밋하고 push
+          git add data/activities.json || true
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: sync activities from Notion [skip ci]"
+            git push origin main || echo "Push to main failed"
+          else
+            echo "No changes to commit to main"
+          fi
 
