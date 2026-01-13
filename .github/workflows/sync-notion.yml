@@ -1,9 +1,9 @@
 name: Sync Notion Activities
 
 on:
-  # 주기적 실행 (30분마다)
+  # 주기적 실행 (5분마다)
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/5 * * * *'
   # 수동 실행
   workflow_dispatch:
   # 브랜치에 푸시 시 (선택적)
