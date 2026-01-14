@@ -14,7 +14,30 @@
 
 **워크플로우가 실행되지 않는 경우:**
 - 수동으로 실행: Actions 탭에서 "Run workflow" 버튼 클릭
-- 스케줄 확인: 5분마다 자동 실행되도록 설정되어 있음
+- 스케줄 확인: 5분, 6분, 7분마다 자동 실행되도록 설정되어 있음 (GitHub Actions 스케줄 실행의 불확실성 보완)
+
+**노션 DB 변경 후 즉시 동기화하려면:**
+1. **GitHub Actions에서 수동 실행 (권장)**
+   - GitHub 저장소 → "Actions" 탭
+   - "Sync Notion Activities" 워크플로우 선택
+   - "Run workflow" 버튼 클릭
+   - 브랜치 선택 (보통 `main`)
+   - "Run workflow" 클릭
+
+2. **API를 통한 수동 트리거 (고급)**
+   ```bash
+   # Personal Access Token 필요 (repo 권한)
+   curl -X POST \
+     -H "Accept: application/vnd.github.v3+json" \
+     -H "Authorization: token YOUR_GITHUB_TOKEN" \
+     https://api.github.com/repos/OWNER/REPO/dispatches \
+     -d '{"event_type":"sync-notion"}'
+   ```
+
+**참고:**
+- GitHub Actions의 스케줄 실행은 정확하지 않을 수 있습니다 (최대 5-10분 지연 가능)
+- 노션 DB를 변경한 후 즉시 반영하려면 수동 실행을 권장합니다
+- 자동 동기화는 평균 5-7분 내에 완료됩니다
 
 ### 2. 노션 필드 확인
 

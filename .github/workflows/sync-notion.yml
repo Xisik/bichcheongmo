@@ -3,10 +3,19 @@ name: Sync Notion Activities
 on:
   # 주기적 실행 (최소 5분마다 - GitHub Actions 제한)
   # 참고: GitHub Actions는 스케줄 실행이 최소 5분 간격입니다
+  # 여러 cron을 추가하여 더 자주 체크 (스케줄 실행의 불확실성 보완)
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/5 * * * *'   # 매 5분마다
+    - cron: '*/6 * * * *'   # 매 6분마다 (5분 간격과 겹치지 않도록)
+    - cron: '*/7 * * * *'   # 매 7분마다 (더 자주 체크)
   # 수동 실행
   workflow_dispatch:
+  # 외부에서 트리거 가능 (repository_dispatch)
+  # 예: curl -X POST -H "Authorization: token YOUR_TOKEN" \
+  #     https://api.github.com/repos/OWNER/REPO/dispatches \
+  #     -d '{"event_type":"sync-notion"}'
+  repository_dispatch:
+    types: [sync-notion]
   # 브랜치에 푸시 시 (선택적)
   # paths 필터 제거: 모든 push에서 실행 (루프 방지를 위해 [skip ci] 태그 사용)
   push:
@@ -18,6 +27,10 @@ on:
 jobs:
   sync-notion:
     runs-on: ubuntu-latest
+    # 중복 실행 방지: 같은 브랜치에서 동시에 여러 번 실행되지 않도록
+    concurrency:
+      group: sync-notion-${{ github.ref }}
+      cancel-in-progress: false  # 진행 중인 작업은 완료까지 기다림
     permissions:
       contents: write  # git push를 위한 권한
     
@@ -58,10 +71,15 @@ jobs:
         run: |
           # activities.json만 add (package-lock.json 등 다른 파일 제외)
           git add data/activities.json
+          
+          # 변경 사항 확인 (내용이 실제로 변경되었는지 확인)
           if ! git diff --staged --quiet; then
+            # 변경 사항이 있으면 커밋 및 푸시
+            echo "Changes detected in activities.json, committing..."
             git commit -m "chore: sync activities from Notion [skip ci]"
             git push origin HEAD:"${GITHUB_REF_NAME}" || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}")
+            echo "✓ Successfully synced and pushed changes"
           else
-            echo "No changes to commit"
+            echo "No changes to commit - activities.json is up to date"
           fi
 
