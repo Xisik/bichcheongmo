@@ -317,6 +317,38 @@
     return activities.find(activity => activity.slug === slug) || null;
   }
 
+  /**
+   * 활동 데이터 페이로드 정규화
+   * payload가 배열이면 그대로, 객체면 payload.activities 사용
+   * 
+   * @param {Array|Object} payload - 원시 데이터 (배열 또는 객체)
+   * @returns {Object} { activities: Array, metadata: Object|null } 형태
+   */
+  function normalizeActivitiesPayload(payload) {
+    // payload가 배열이면 그대로, 객체면 payload.activities 사용
+    const activities = Array.isArray(payload) ? payload : (payload?.activities ?? []);
+    const metadata = Array.isArray(payload) ? null : (payload?._metadata ?? null);
+
+    return { activities, metadata };
+  }
+
+  /**
+   * activities.json 파일을 fetch하고 정규화된 데이터 반환
+   * 캐시 무시를 위해 타임스탬프 쿼리 파라미터 추가
+   * 
+   * @returns {Promise<Object>} { activities: Array, metadata: Object|null } 형태
+   */
+  async function fetchActivitiesJson() {
+    // 캐시 무시용 쿼리 붙이기
+    const url = `./data/activities.json?v=${Date.now()}`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch activities.json: ${res.status}`);
+    }
+    const payload = await res.json();
+    return normalizeActivitiesPayload(payload);
+  }
+
   // Public API
   ui.activities = ui.activities || {};
   ui.activities.data = {
@@ -325,7 +357,19 @@
     sortActivitiesByDate: sortActivitiesByDate,
     findActivityBySlug: findActivityBySlug,
     generateSlug: generateSlug,
-    parseDate: parseDate
+    parseDate: parseDate,
+    normalizeActivitiesPayload: normalizeActivitiesPayload,
+    fetchActivitiesJson: fetchActivitiesJson
+  };
+
+  // 전역 API (window.ActivitiesData) - 하위 호환성 및 편의성
+  window.ActivitiesData = window.ActivitiesData || {};
+  window.ActivitiesData.load = async function () {
+    const { activities, metadata } = await fetchActivitiesJson();
+    // 필요하면 전역 캐시
+    window.ActivitiesData._metadata = metadata;
+    window.ActivitiesData._items = activities;
+    return activities;
   };
 
   // Export for testing (if needed)

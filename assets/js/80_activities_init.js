@@ -172,9 +172,33 @@
    * @returns {Promise<Object>} { activities: Array, metadata: Object } 형태의 데이터
    */
   function loadActivitiesData() {
-    // GitHub Actions에서 생성한 JSON 파일 로드
-    // 인증 정보는 GitHub Actions에서만 사용되며, 클라이언트에는 노출되지 않음
-    // 캐시 방지를 위한 타임스탬프 추가
+    const { fetchActivitiesJson, normalizeActivitiesPayload } = ui.activities.data || {};
+    
+    // 정규화 함수가 있으면 사용 (60_activities_data.js에서 제공)
+    if (fetchActivitiesJson) {
+      return fetchActivitiesJson()
+        .catch(error => {
+          console.error('활동 데이터 로드 실패:', error);
+          // 에러 발생 시 테스트 데이터 사용 (폴백)
+          console.warn('테스트 데이터를 사용합니다.');
+          return getTestData().then(testData => {
+            // 테스트 데이터도 정규화 함수로 처리
+            const normalized = normalizeActivitiesPayload ? 
+              normalizeActivitiesPayload(testData) : 
+              { activities: testData, metadata: null };
+            return {
+              activities: normalized.activities,
+              metadata: normalized.metadata || {
+                lastUpdated: null,
+                syncStatus: 'fallback',
+                errorMessage: `Data load failed: ${error.message}`
+              }
+            };
+          });
+        });
+    }
+    
+    // 하위 호환성: 정규화 함수가 없으면 기존 방식 사용
     const url = `./data/activities.json?t=${Date.now()}`;
     
     return fetch(url, { cache: "no-store" })
@@ -192,6 +216,11 @@
           }));
         }
         return response.json().then(data => {
+          // 정규화 함수 사용
+          if (normalizeActivitiesPayload) {
+            return normalizeActivitiesPayload(data);
+          }
+          
           // Story 2.4: 새로운 형식 (메타데이터 포함) 또는 기존 형식 (배열) 지원
           if (data.activities && data._metadata) {
             // 새로운 형식
