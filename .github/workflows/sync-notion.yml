@@ -30,7 +30,7 @@ jobs:
     # 중복 실행 방지: 같은 브랜치에서 동시에 여러 번 실행되지 않도록
     concurrency:
       group: sync-notion-${{ github.ref }}
-      cancel-in-progress: false  # 진행 중인 작업은 완료까지 기다림
+      cancel-in-progress: true  # 진행 중인 작업을 취소하고 새로운 작업 실행
     permissions:
       contents: write  # git push를 위한 권한
     
