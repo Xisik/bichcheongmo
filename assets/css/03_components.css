@@ -36,8 +36,8 @@
 }
 
 .logo{
-  width     : 45px;
-  height    : 45px;
+  width     : 3.0rem;  /* 메뉴 버튼, 다크 모드 버튼과 동일한 크기 */
+  height    : 3.0rem;  /* 메뉴 버튼, 다크 모드 버튼과 동일한 크기 */
   object-fit: cover;
   display   : block;
 
