@@ -19,7 +19,7 @@ jobs:
     # 배포 작업의 동시 실행 제어
     # 새 배포가 시작되면 진행 중인 배포를 취소하고 새 배포로 전환
     concurrency:
-      group: pages-deploy
+      group: github-pages
       cancel-in-progress: true
     
     environment:
