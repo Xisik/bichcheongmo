@@ -2,9 +2,14 @@ name: Deploy GitHub Pages
 
 on:
   # GitHub Pages 배포를 트리거하는 이벤트
+  # main 브랜치에 push될 때만 실행 (Notion sync의 JSON 업데이트 포함)
   push:
     branches:
       - main
+    # paths 필터로 불필요한 배포 방지 (선택적)
+    # paths-ignore:
+    #   - '**.md'
+    #   - '.github/**'
   # 수동 실행
   workflow_dispatch:
 

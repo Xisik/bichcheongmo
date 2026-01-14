@@ -16,13 +16,8 @@ on:
   #     -d '{"event_type":"sync-notion"}'
   repository_dispatch:
     types: [sync-notion]
-  # 브랜치에 푸시 시 (선택적)
-  # paths 필터 제거: 모든 push에서 실행 (루프 방지를 위해 [skip ci] 태그 사용)
-  push:
-    branches:
-      - main
-      - feed
-      - pr-sync  # PR 동기화 브랜치
+  # push 트리거 제거: Notion sync는 schedule/repository_dispatch/workflow_dispatch만 사용
+  # JSON 업데이트 후 push는 [skip ci] 없이 하여 pages-deploy.yml이 자동 배포하도록
 
 jobs:
   sync-notion:
@@ -76,7 +71,7 @@ jobs:
           if ! git diff --staged --quiet; then
             # 변경 사항이 있으면 커밋 및 푸시
             echo "Changes detected in activities.json, committing..."
-            git commit -m "chore: sync activities from Notion [skip ci]"
+            git commit -m "chore: sync activities from Notion"
             git push origin HEAD:"${GITHUB_REF_NAME}" || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}")
             echo "✓ Successfully synced and pushed changes"
           else
