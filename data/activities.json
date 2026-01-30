@@ -1,10 +1,50 @@
 {
   "_metadata": {
-    "lastUpdated": "2026-01-21T11:58:38.635Z",
-    "syncStatus": "partial",
-    "errorMessage": "No activities found in database",
-    "activitiesCount": 0,
+    "lastUpdated": "2026-01-30T14:19:33.119Z",
+    "syncStatus": "success",
+    "errorMessage": null,
+    "activitiesCount": 3,
     "version": "1.0"
   },
-  "activities": []
+  "activities": [
+    {
+      "title": "빛청모 월간지 웨이브 제 1호 2026년 1월호",
+      "date": "2026-01-24T00:00:00.000Z",
+      "summary": "빛청모 월간지 웨이브 제 1호 2026년 1월호",
+      "body": "안녕하세요 회원 및 무지개 동지 여러분! \n이곳은 빛청모의 월간지인 웨이브 편집부입니다! \n2026년 1월 새해를 맞아 힘찬 여정을 시작하게 된 빛청모의 한달간 주요 소식을 앞으로 여러분들께 이곳에서 전해드릴 예정입니다! \n\n1. 빛청모 단체 등록을 완료하다! \n첫번째 소식은 빛청모가 새로운 ‘단체’로써의 여정을 시작했다는 기쁜 소식입니다 빛청모는 1월 14일 순천세무서에서 ‘법인으로 보는 단체’로 승인 되었으며 전국 단위의 회원 네트워크를 기반으로 다양한 지역의 지역지부를 결성하여 활동할 예정입니다! 또한 산하 위원회를 결성하여 지역 사회 및 노동계 / 정치계의 여러 단체 및 동지들과 연대를 이어갈 방침입니다 \n\n빛청모 월간지 웨이브는 앞으로 중앙 소식을 먼저 전한 후 각 지역지부의 소식을 전해드리고 있습니다 \n\n-지역지부 소식- \n\n\n-부울경지부 소식- 안녕하세요 빛청모 부울경 지부 금강대표 입니다.\n사실 적을게 없네요.\n흠.. 한가지 원하는 목표가 있다면 저는 부울경 지부가 지방에 사는 청퀴들이 모여서 다같이 즐거운 시간을 만들고 싶습니다!\n네 그럼 이상.\n\n-경기북부지부 소식 -빛나는 우리, 청소년 성소수자 모임 경기북부지부 소식- 경기북부지부는 고양,파주,의정부를 관활하고 있으며 현재 고양,파주,의정부에서 활동,거주 하고있는 회원들을 가입시키려 하는중. 2026년 1월 21일 결성, 결성후 즉시 성명 발표. 현재 회원은 없지만 구글폼 작성 형태로 회원 모집 예정 추후 회원이 모아지고 평등수칙,규약,규정이 정해지면 정식 설립신고후 법인계좌 개설예정. 회원이 모아지면 6월 지방선거 관련하여 논의 예정.(ex 지방선거에서 우리는 어떻게 대책하고 어떻게 활동하여야할까?,고양,파주,의정부에서 어떤 정당의 후보와 어떤 공약이 나올까?) \n\n충청지부 소식은 인스타그램 게시물을 확인하세요! https://www.instagram.com/p/DT2axuFiWkh/?img_index=1 \n\n광주전남지부 소식은 인스타그램 게시물을 확인하세요! https://www.instagram.com/p/DT2WPDYEb7l/?img_index=1",
+      "slug": "2f2324dad96680bd8776",
+      "published": true,
+      "category": "월간지웨이브",
+      "image": null,
+      "id": "2f2324da-d966-80bd-8776-e70d29eecd11",
+      "created_time": "2026-01-24T04:01:00.000Z",
+      "last_edited_time": "2026-01-24T04:03:00.000Z"
+    },
+    {
+      "title": "🌈📦빛청모 탈가정 퀴어청소년 또래지원 팩📦🌈",
+      "date": "2026-01-30T00:00:00.000Z",
+      "summary": "🌈📦빛청모 탈가정 퀴어청소년 또래지원 팩📦🌈",
+      "body": "빛청모에서 또래 탈가정 퀴어청소년을 위한 생필품을 포함한 지원팩 지원 사업을 시작합니다!\n수령할 주소지가 있는 탈가정 퀴어 청소년이라면 모두 신청 가능합니다! 자세한 사항은 첨부된 홍보물을 참고하시기 바랍니다!\n신청 구글폼 : https://forms.gle/hMbMdHb5Zzq69sLK7#퀴어 #청소년 #탈가정 #지원 #게이 #레즈 #트젠 #바이 #논바이너리 #성소수자 #LGBTQ #청소년퀴어 #빛청모",
+      "slug": "2f8324dad96680359fa0",
+      "published": true,
+      "category": "또래사업",
+      "image": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9f3324da-d966-8150-b555-0003363350a6/02de4cd3-73a1-4c24-8a21-da7b390fa3a7/KakaoTalk_Photo_2026-01-30-21-52-20.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466U2DSWZ7I%2F20260130%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260130T141932Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENb%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQDRGEzCXkPT5jqS1Krpk0%2Bc90EaSqqn6B8RKa%2B%2FLdLqFgIgK37eQwAyaATg3ap%2BKK6kDabKk%2FKKlio4uF%2FGKQZHplYqiAQIn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDFdV0CR0mkZ3KZIjtSrcA2RLp5QXn0N6mAKxajh8y9PvN2I2IMglMkTbNEWexcGsS%2F7YmNWA5qyQ3wGLs2CUTcByMrjdytWlPKfKe00a%2FksHDWnymUkoIwX10jJHPqO3bYkSKDuvWGmqlppwo094xRSmf2t%2BQY6nodL%2B%2BoRIFE7rbgSc4%2BI5iSergWiyeIb89QlMy5WNGYVvfSfYNPQeOA3jF3zepeEmzeiy6k6ScTbofh68IkNkgb0%2FOkIcAlzp6ysgLYHsE10Hmt6TtjfhvGNEAj%2BRdmzrr47ntqM7868po48KRQZ8dlIaJ6TyXwy2Pvm155ijBdmc8LHQSfWwjL8%2BwPrJhjgzHlxBjk%2FJ5Mcl72joPzT76X86yJJoccnsj6ZBG0LRWsGA2XGQXMjHW0EJbM992ax64RxgG7ycXHdmOkpCxrSriDiwSe6HfQBWwLynjC7kBSn%2BpN5TIQ%2FJiEBxjy6YZ6T4SuLcWV7KMMnEcz9mgbR%2FuW4J4rnRSS1ZyEuddoLdq5CyvL7qN1LAq6sH7QtA59s3FA5RuwIDuO1tXBS7orsil81tteHrH6HmX4vbj2D3q9H8byGILf09qGFgTp9ifgvBD6QfGv1o2h%2FnSP8XPCYxy1TBsxHYie7pHrdnoZiEdP%2B7DL04MPv68ssGOqUBaGbOnTshdZeCRFAJeW5jV5%2B9vHaewc8id5INVf8pwpA%2Bp%2BweVcP49vhDM9ukP5krxTxNImrIPi%2BII289MWCvXxuCZ9ccH7BXCdbY41iJiUptZoVyt1Trv%2B5lBfd4w%2FaNBvrlRDAJHf%2FsZWIYJsneeJXgd55PZxUBpRq2%2B9mK%2FvKLdbccfrEVtCDW%2Bhvy4fTqCjqcgS6QAquWdSZ6RGhre4SwEpYQ&X-Amz-Signature=3eb06f87d9ba96c992d89bedc8892abed8d423f89eda727783eb00c4c080de4e&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+      "id": "2f8324da-d966-8035-9fa0-f091b142c4a2",
+      "created_time": "2026-01-30T13:43:00.000Z",
+      "last_edited_time": "2026-01-30T13:44:00.000Z"
+    },
+    {
+      "title": "빛청모 제 1회 정기정모",
+      "date": "2026-01-25T00:00:00.000Z",
+      "summary": "빛청모 제 1회 정기정모",
+      "body": "빛청모의 제 1회 정기정모가 경상남도 창원시 성산구 일대에서 열렸습니다!\n\n총 8명의 회원이 참석하였으며 방탈출 및 노래방을 즐기고 식사를 함께 하였습니다! \n\n빛청모는 월1회 전국 무작위 지역에서 정기정모를 진행합니다.\n\n제 2회 정기정모는 충청남도 천안시에서 이루어질 예정입니다",
+      "slug": "2f8324dad96680dc9726",
+      "published": true,
+      "category": "정기모임",
+      "image": "https://prod-files-secure.s3.us-west-2.amazonaws.com/9f3324da-d966-8150-b555-0003363350a6/79119731-2952-41b2-bf93-779e30f3eba2/KakaoTalk_Photo_2026-01-28-11-40-52_%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466U2DSWZ7I%2F20260130%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260130T141932Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENb%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQDRGEzCXkPT5jqS1Krpk0%2Bc90EaSqqn6B8RKa%2B%2FLdLqFgIgK37eQwAyaATg3ap%2BKK6kDabKk%2FKKlio4uF%2FGKQZHplYqiAQIn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDFdV0CR0mkZ3KZIjtSrcA2RLp5QXn0N6mAKxajh8y9PvN2I2IMglMkTbNEWexcGsS%2F7YmNWA5qyQ3wGLs2CUTcByMrjdytWlPKfKe00a%2FksHDWnymUkoIwX10jJHPqO3bYkSKDuvWGmqlppwo094xRSmf2t%2BQY6nodL%2B%2BoRIFE7rbgSc4%2BI5iSergWiyeIb89QlMy5WNGYVvfSfYNPQeOA3jF3zepeEmzeiy6k6ScTbofh68IkNkgb0%2FOkIcAlzp6ysgLYHsE10Hmt6TtjfhvGNEAj%2BRdmzrr47ntqM7868po48KRQZ8dlIaJ6TyXwy2Pvm155ijBdmc8LHQSfWwjL8%2BwPrJhjgzHlxBjk%2FJ5Mcl72joPzT76X86yJJoccnsj6ZBG0LRWsGA2XGQXMjHW0EJbM992ax64RxgG7ycXHdmOkpCxrSriDiwSe6HfQBWwLynjC7kBSn%2BpN5TIQ%2FJiEBxjy6YZ6T4SuLcWV7KMMnEcz9mgbR%2FuW4J4rnRSS1ZyEuddoLdq5CyvL7qN1LAq6sH7QtA59s3FA5RuwIDuO1tXBS7orsil81tteHrH6HmX4vbj2D3q9H8byGILf09qGFgTp9ifgvBD6QfGv1o2h%2FnSP8XPCYxy1TBsxHYie7pHrdnoZiEdP%2B7DL04MPv68ssGOqUBaGbOnTshdZeCRFAJeW5jV5%2B9vHaewc8id5INVf8pwpA%2Bp%2BweVcP49vhDM9ukP5krxTxNImrIPi%2BII289MWCvXxuCZ9ccH7BXCdbY41iJiUptZoVyt1Trv%2B5lBfd4w%2FaNBvrlRDAJHf%2FsZWIYJsneeJXgd55PZxUBpRq2%2B9mK%2FvKLdbccfrEVtCDW%2Bhvy4fTqCjqcgS6QAquWdSZ6RGhre4SwEpYQ&X-Amz-Signature=5f0bbbe99e9a596ac5a6c03219a1e1cc7196b55497e808f8864c17fb103fa391&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+      "id": "2f8324da-d966-80dc-9726-f853ce3d031e",
+      "created_time": "2026-01-30T05:32:00.000Z",
+      "last_edited_time": "2026-01-30T06:41:00.000Z"
+    }
+  ]
 }
