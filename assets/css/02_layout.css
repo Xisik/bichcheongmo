@@ -134,10 +134,16 @@ button.menu-toggle{
 }
 
 .footer-inner{
-  display        : flex;
-  justify-content: space-between;
-  gap            : 1rem;
-  flex-wrap      : wrap;
+  display         : flex;
+  flex-direction  : column;
+  justify-content : flex-start;
+  align-items     : stretch;
+  gap             : 1rem;
+  flex-wrap       : wrap;
+}
+
+.footer-legal{
+  width: 100%;
 }
 
 /* =========================
