@@ -1,24 +1,10 @@
 {
   "_metadata": {
-    "lastUpdated": "2026-02-14T14:51:04.075Z",
-    "syncStatus": "success",
-    "errorMessage": null,
-    "statementsCount": 1,
+    "lastUpdated": "2026-02-14T15:08:06.859Z",
+    "syncStatus": "partial",
+    "errorMessage": "No statements found in database",
+    "statementsCount": 0,
     "version": "1.0"
   },
-  "statements": [
-    {
-      "title": "dd",
-      "date": "2026-02-14T00:00:00.000Z",
-      "summary": "d",
-      "body": "dddd",
-      "slug": "dd",
-      "published": true,
-      "category": null,
-      "image": null,
-      "id": "307324da-d966-809d-af0d-d7b3fe79f766",
-      "created_time": "2026-02-14T14:30:00.000Z",
-      "last_edited_time": "2026-02-14T14:30:00.000Z"
-    }
-  ]
+  "statements": []
 }
