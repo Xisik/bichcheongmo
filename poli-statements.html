@@ -2,9 +2,16 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Story 3.2: 모바일 반응형 디자인 - 뷰포트 메타 태그 최적화 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+  <meta name="description" content="빛청모 정치위원회의 성명서를 공유하는 공간입니다." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="빛청모 | 정치위원회 성명" />
+  <meta property="og:description" content="빛청모 정치위원회의 성명서를 공유하는 공간입니다." />
   <meta property="og:image" content="./assets/img/logo.jpg" />
-  <title>빛청모 | 정치위원회 성명서</title>
+  <meta property="og:url" content="./poli-statements.html" />
+  <meta property="og:locale" content="ko_KR" />
+  <title>빛청모 | 정치위원회 성명</title>
 
   <link rel="icon" href="./assets/img/logo.jpg" sizes="any" />
   <link rel="stylesheet" href="./assets/css/00_tokens.css" />
@@ -30,19 +37,23 @@
         <a class="nav-link" href="./contact.html">문의하기</a>
         <a class="nav-link" href="./donate.html">후원하기</a>
         <a class="nav-link" href="./region.html">지역지부</a>
-        <a class="nav-link is-active" href="./poli.html">정치위원회</a>
+        <a class="nav-link" href="./poli.html">정치위원회</a>
+        <a class="nav-link is-active" href="./poli-statements.html">성명</a>
       </nav>
 
       <div class="header-actions">
+        <!-- Story 3.3: 스크린 리더 접근성 - 메뉴 토글 버튼 -->
         <button
           type="button"
           class="menu-toggle"
           data-nav-toggle
           aria-controls="siteNav"
           aria-expanded="false"
+          aria-label="메뉴 열기"
         >MENU</button>
 
-        <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
+        <!-- Story 3.3: 스크린 리더 접근성 - 테마 토글 버튼 -->
+        <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="다크 모드로 전환">
           다크 모드
         </button>
       </div>
@@ -52,22 +63,26 @@
 
 
 
+
   <main class="container">
     <section class="page-header">
-      <h1>성명서</h1>
-      <p>등록된 성명이 없습니다</p>
+      <h1>성명</h1>
+      <p>
+      빛청모 정치위원회의 성명서를 공유하는 공간입니다.
+      </p>
     </section>
 
-    <section class="card content">
-      <div id="statement-list">
-        <p>현재 등록된 성명서가 없습니다.</p>
-      </div>
+    <!-- Story 3.3: 스크린 리더 접근성 - 성명 목록 영역 -->
+    <section id="statement-list" class="activities-container" role="region" aria-label="성명 목록">
+      <!-- 성명 목록이 여기에 동적으로 렌더링됩니다 -->
     </section>
+
   </main>
 
   <div class="toast" id="toast" aria-live="polite" aria-atomic="true"></div>
 
-  <footer class="site-footer">
+  <!-- Story 3.3: 스크린 리더 접근성 - 푸터 -->
+  <footer class="site-footer" role="contentinfo">
     <div class="container footer-inner">
       <div class="card footer-legal">
         <p>사업자번호 231-82-77851</p>
@@ -82,8 +97,17 @@
   <script src="./assets/js/30_disclosure.js"></script>
   <script src="./assets/js/10_toast.js"></script>
   <script src="./assets/js/20_modal.js"></script>
+  <script src="./assets/js/60_statements_data.js"></script>
+  <script src="./assets/js/70_statements_list.js"></script>
+  <script src="./assets/js/75_statements_detail.js"></script>
+  <script src="./assets/js/77_statements_router.js"></script>
+  <script src="./assets/js/78_statements_seo.js"></script>
+  <script src="./assets/js/79_statements_links.js"></script>
   <script src="./assets/js/99_main.js"></script>
   <script src="./assets/js/40_theme.js"></script>
   <script src="./assets/js/50_mobile_menu.js"></script>
+  <script src="./assets/js/90_keyboard_accessibility.js"></script>
+  <script src="./assets/js/80_statements_init.js"></script>
+
 </body>
 </html>

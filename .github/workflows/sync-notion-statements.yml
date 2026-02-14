@@ -1,0 +1,79 @@
+name: Sync Notion Statements
+
+on:
+  # 주기적 실행 (최소 5분마다 - GitHub Actions 제한)
+  # 참고: GitHub Actions는 스케줄 실행이 최소 5분 간격입니다
+  # 여러 cron을 추가하여 더 자주 체크 (스케줄 실행의 불확실성 보완)
+  schedule:
+    - cron: '*/5 * * * *'   # 매 5분마다
+    - cron: '*/6 * * * *'   # 매 6분마다 (5분 간격과 겹치지 않도록)
+    - cron: '*/7 * * * *'   # 매 7분마다 (더 자주 체크)
+  # 수동 실행
+  workflow_dispatch:
+  # 외부에서 트리거 가능 (repository_dispatch)
+  # 예: curl -X POST -H "Authorization: token YOUR_TOKEN" \
+  #     https://api.github.com/repos/OWNER/REPO/dispatches \
+  #     -d '{"event_type":"sync-notion-statements"}'
+  repository_dispatch:
+    types: [sync-notion-statements]
+  # push 트리거 제거: Notion sync는 schedule/repository_dispatch/workflow_dispatch만 사용
+  # JSON 업데이트 후 push는 [skip ci] 없이 하여 pages-deploy.yml이 자동 배포하도록
+
+jobs:
+  sync-notion-statements:
+    runs-on: ubuntu-latest
+    # 중복 실행 방지: 같은 브랜치에서 동시에 여러 번 실행되지 않도록
+    concurrency:
+      group: sync-notion-statements-${{ github.ref }}
+      cancel-in-progress: true  # 진행 중인 작업을 취소하고 새로운 작업 실행
+    permissions:
+      contents: write  # git push를 위한 권한
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Pull latest changes
+        run: |
+          git pull --rebase origin "${GITHUB_REF_NAME}" || echo "Pull failed, continuing..."
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Sync Notion statements data
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_STATEMENTS_DATABASE_ID: ${{ secrets.NOTION_STATEMENTS_DATABASE_ID }}
+        run: |
+          # 노션 데이터를 가져와서 JSON 파일로 저장하는 스크립트 실행
+          node scripts/sync-notion-statements.js
+
+      - name: Commit and push statements.json
+        run: |
+          # statements.json만 add (package-lock.json 등 다른 파일 제외)
+          git add data/statements.json
+          
+          # 변경 사항 확인 (내용이 실제로 변경되었는지 확인)
+          if ! git diff --staged --quiet; then
+            # 변경 사항이 있으면 커밋 및 푸시
+            echo "Changes detected in statements.json, committing..."
+            git commit -m "chore: sync statements from Notion"
+            git push origin HEAD:"${GITHUB_REF_NAME}" || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}")
+            echo "✓ Successfully synced and pushed changes"
+          else
+            echo "No changes to commit - statements.json is up to date"
+          fi

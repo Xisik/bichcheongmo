@@ -7,6 +7,22 @@
  */
 
 /**
+ * 제목에서 슬러그 생성
+ * @param {string} title - 제목
+ * @returns {string} 생성된 슬러그
+ */
+function generateSlugFromTitle(title) {
+  if (!title) return '';
+  
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // 특수문자 제거
+    .replace(/[\s_-]+/g, '-') // 공백, 언더스코어, 하이픈을 하이픈으로 통일
+    .replace(/^-+|-+$/g, ''); // 앞뒤 하이픈 제거
+}
+
+/**
  * 노션 속성에서 텍스트 추출
  * @param {Object} property - 노션 속성 객체
  * @returns {string} 추출된 텍스트
@@ -250,9 +266,8 @@ function transformNotionPage(page, blocks = []) {
     body = blocksToMarkdown(blocks);
   }
 
-  // 슬러그 또는 ID
-  const slugProperty = findProperty(properties, ['슬러그', 'Slug', 'slug', 'URL', 'url']);
-  const slug = extractText(slugProperty) || page.id.replace(/-/g, '').substring(0, 20);
+  // 슬러그는 제목에서 자동 생성 (페이지 ID 기반 fallback)
+  const slug = generateSlugFromTitle(title) || page.id.replace(/-/g, '').substring(0, 20);
 
   // 공개 여부 (기본값: true)
   // Checkbox 또는 Status 타입 모두 지원
