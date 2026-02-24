@@ -13,13 +13,13 @@ const path = require('path');
 const NotionClient = require('./notion-client');
 const { transformNotionPage } = require('./notion-transformer');
 
-// 환경 변수 확인
-const NOTION_API_KEY = process.env.NOTION_API_KEY;
+// 환경 변수 확인 (성명서 전용 API 키 우선, 없으면 공용 NOTION_API_KEY 사용)
+const NOTION_API_KEY = process.env.NOTION_STATEMENTS_API_KEY || process.env.NOTION_API_KEY;
 const NOTION_STATEMENTS_DATABASE_ID = process.env.NOTION_STATEMENTS_DATABASE_ID || process.env.NOTION_DATABASE_ID;
 
 if (!NOTION_API_KEY) {
-  console.error('ERROR: NOTION_API_KEY environment variable is not set');
-  console.error('Please set NOTION_API_KEY in GitHub Secrets');
+  console.error('ERROR: Notion API key is not set');
+  console.error('Please set NOTION_STATEMENTS_API_KEY or NOTION_API_KEY in GitHub Secrets');
   process.exit(1);
 }
 

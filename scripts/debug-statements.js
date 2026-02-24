@@ -7,11 +7,11 @@
 
 const NotionClient = require('./notion-client');
 
-const NOTION_API_KEY = process.env.NOTION_API_KEY;
+const NOTION_API_KEY = process.env.NOTION_STATEMENTS_API_KEY || process.env.NOTION_API_KEY;
 const NOTION_STATEMENTS_DATABASE_ID = process.env.NOTION_STATEMENTS_DATABASE_ID || process.env.NOTION_DATABASE_ID;
 
 if (!NOTION_API_KEY) {
-  console.error('ERROR: NOTION_API_KEY environment variable is not set');
+  console.error('ERROR: Notion API key is not set. Set NOTION_STATEMENTS_API_KEY or NOTION_API_KEY.');
   process.exit(1);
 }
 

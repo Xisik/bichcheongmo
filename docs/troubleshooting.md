@@ -155,9 +155,75 @@ NOTION_API_KEY=your_api_key NOTION_DATABASE_ID=your_database_id node scripts/deb
 }
 ```
 
+---
+
+## 정치위원회(성명서) 노션 연동이 안 될 때
+
+정치위원회 성명은 **활동공유와 별도의 노션 데이터베이스**를 사용합니다. 성명이 안 보이면 아래를 순서대로 확인하세요.
+
+### 1. GitHub Secrets 확인
+
+저장소 **Settings → Secrets and variables → Actions**에서 다음이 있는지 확인:
+
+| Secret 이름 | 설명 |
+|------------|------|
+| `NOTION_API_KEY` | 노션 통합 토큰 (활동공유와 동일한 통합 사용 가능) |
+| `NOTION_STATEMENTS_DATABASE_ID` | **성명서 전용** 노션 데이터베이스 ID |
+
+- `NOTION_STATEMENTS_DATABASE_ID`가 없으면 `NOTION_DATABASE_ID`(활동공유용 DB)를 쓰게 됩니다.  
+  **성명서 전용 DB를 쓰려면 반드시 `NOTION_STATEMENTS_DATABASE_ID`를 추가하세요.**
+- 데이터베이스 ID는 노션 DB 페이지 URL에서 확인:  
+  `https://www.notion.so/.../{이 부분이 database_id}?v=...`
+
+### 2. Sync Notion Statements 워크플로우 확인
+
+1. GitHub 저장소 → **Actions** 탭
+2. **"Sync Notion Statements"** 워크플로우 선택
+3. 최근 실행이 **성공(녹색)** 인지 확인
+4. 실패했다면 로그에서 다음 확인:
+   - `NOTION_API_KEY` / `NOTION_STATEMENTS_DATABASE_ID` 누락 → Secrets 설정
+   - `Could not find database` → 노션에서 통합 연결(아래 3번)
+   - `Found 0 pages` → DB에 페이지가 없거나, 통합이 연결되지 않음
+   - `Successfully transformed 0 statements` → 페이지는 있지만 필수 필드(제목/날짜) 누락
+
+**즉시 동기화:** Actions → "Sync Notion Statements" → **Run workflow** → Run workflow
+
+### 3. 노션에서 성명서 DB에 통합 연결
+
+**가장 흔한 원인입니다.** 통합을 만들기만 하고 DB에 연결하지 않으면 데이터를 가져올 수 없습니다.
+
+1. **성명서용** 노션 데이터베이스 페이지로 이동
+2. 우측 상단 **"..."** → **연결(Connections)** 선택
+3. 사용 중인 통합(예: bichcheongmo-sync) 검색 후 **연결**
+4. 연결 후 GitHub Actions에서 "Sync Notion Statements"를 한 번 수동 실행
+
+### 4. 성명서 DB 필드 확인
+
+각 성명 **페이지**에 다음이 있어야 합니다:
+
+- **제목** (또는 Title, 이름, Name) — 타입: **Title**
+- **날짜** (또는 Date, 일자) — 타입: **Date**
+
+둘 중 하나라도 없거나 비어 있으면 해당 페이지는 성명 목록에 포함되지 않습니다.  
+요약·본문은 선택이며, 본문은 페이지 블록으로만 써도 됩니다.
+
+### 5. 로컬에서 성명서 연동 테스트
+
+로컬에서 아래 스크립트로 연결·필드를 확인할 수 있습니다:
+
+```bash
+# Windows PowerShell
+$env:NOTION_API_KEY="your_api_key"
+$env:NOTION_STATEMENTS_DATABASE_ID="your_database_id"
+node scripts/debug-statements.js
+```
+
+성공하면 DB에서 가져온 페이지 수와 필드 정보가 출력됩니다. 실패 시 에러 메시지와 함께 확인할 항목이 안내됩니다.
+
 ### 6. 추가 도움말
 
 더 자세한 내용은 다음 문서를 참조하세요:
 - [노션 연동 설정 가이드](./notion-setup.md)
 - [노션 활동 템플릿 가이드](./notion-template-guide.md)
+- [노션 성명서 연동 설정 가이드](./notion-statements-setup.md) — **정치위원회 성명 전용**
 
