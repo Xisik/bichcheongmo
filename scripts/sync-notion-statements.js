@@ -144,9 +144,10 @@ async function fetchNotionData() {
     if (fs.existsSync(dataPath)) {
       try {
         const existingFile = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        // 새로운 형식 (메타데이터 포함) 또는 기존 형식 (배열) 지원
-        const existingData = existingFile.statements || existingFile;
-        console.log(`WARNING: Using existing data file with ${Array.isArray(existingData) ? existingData.length : 0} statements as fallback`);
+        // 새로운 형식 (메타데이터 포함) 또는 기존 형식 (배열) 지원, 항상 배열 반환
+        const raw = existingFile.statements ?? existingFile;
+        const existingData = Array.isArray(raw) ? raw : [];
+        console.log(`WARNING: Using existing data file with ${existingData.length} statements as fallback`);
         return existingData;
       } catch (fallbackError) {
         console.error('ERROR: Failed to read fallback data file:', fallbackError.message);

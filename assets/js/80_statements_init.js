@@ -10,7 +10,7 @@
   const { parseStatements, sortStatementsByDate, findStatementBySlug } = ui.statements.data;
   const { renderStatementList, showLoadingState, showErrorState } = ui.statements.list;
   const { renderStatementDetail } = ui.statements.detail || {};
-  const { initRouter, getStatementSlugFromUrl, showNotFoundError } = ui.statements.router || {};
+  const { initRouter, getStatementSlugFromUrl, showNotFoundError, updateUrl } = ui.statements.router || {};
   const { setListPageSEO, setDetailPageSEO, initSEO } = ui.statements.seo || {};
   const { initLinks, enhanceStatementDetailLinks } = ui.statements.links || {};
   const $ = ui.$ || ((sel) => document.querySelector(sel));
@@ -101,13 +101,18 @@
           enhanceStatementDetailLinks();
         }
       } else {
-        // 성명을 찾을 수 없음
+        // 성명이 하나도 없을 때는 목록(빈 상태)으로 보여 주고 URL 정리
+        if (cachedStatements.length === 0 && updateUrl) {
+          updateUrl(null, true);
+          renderRoute(null);
+          return;
+        }
+        // 성명을 찾을 수 없음 (목록은 있으나 해당 slug 없음)
         if (showNotFoundError) {
           showNotFoundError(container, '요청하신 성명을 찾을 수 없습니다.');
         } else if (ui.statements.detail && ui.statements.detail.showErrorState) {
           ui.statements.detail.showErrorState(container, '요청하신 성명을 찾을 수 없습니다.');
         }
-        // SEO는 목록 페이지로 설정
         if (setListPageSEO) {
           setListPageSEO();
         }
@@ -135,13 +140,18 @@
             enhanceStatementDetailLinks();
           }
         } else {
-          // 성명을 찾을 수 없음
+          // 성명이 하나도 없을 때는 목록(빈 상태)으로 보여 주고 URL 정리
+          if (parsed.length === 0 && updateUrl) {
+            updateUrl(null, true);
+            renderRoute(null);
+            return;
+          }
+          // 성명을 찾을 수 없음 (목록은 있으나 해당 slug 없음)
           if (showNotFoundError) {
             showNotFoundError(container, '요청하신 성명을 찾을 수 없습니다.');
           } else if (ui.statements.detail && ui.statements.detail.showErrorState) {
             ui.statements.detail.showErrorState(container, '요청하신 성명을 찾을 수 없습니다.');
           }
-          // SEO는 목록 페이지로 설정
           if (setListPageSEO) {
             setListPageSEO();
           }
