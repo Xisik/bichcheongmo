@@ -265,14 +265,30 @@ async function main() {
       statements = [];
     }
   } finally {
-    // Story 2.4: 메타데이터와 함께 저장 (성공/부분 성공/실패 모두)
+    // 0건일 때 기존 파일에 성명이 있으면 덮어쓰지 않음 (한 번 있던 성명이 사라지지 않도록)
+    const dataPath = path.join(__dirname, '..', 'data', 'statements.json');
+    if (statements.length === 0 && (syncStatus !== 'success' || errorMessage)) {
+      if (fs.existsSync(dataPath)) {
+        try {
+          const existing = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+          const existingList = Array.isArray(existing.statements) ? existing.statements : (Array.isArray(existing) ? existing : []);
+          if (existingList.length > 0) {
+            console.log(`INFO: Keeping ${existingList.length} existing statements (sync returned 0)`);
+            statements = existingList;
+            if (syncStatus === 'success') syncStatus = 'partial';
+            if (!errorMessage) errorMessage = 'No statements from Notion; kept previous data';
+          }
+        } catch (_) {}
+      }
+    }
+
     const metadata = {
       lastUpdated: new Date().toISOString(),
       syncStatus: syncStatus,
       errorMessage: errorMessage,
       syncDuration: new Date() - startTime
     };
-    
+
     saveStatementsData(statements, metadata);
     
     if (syncStatus === 'success') {
