@@ -215,7 +215,7 @@
         ? rawData.metadata
         : {};
 
-      // 파싱된 데이터 구성
+      // 파싱된 데이터 구성 (id는 상세 조회 시 slug 대체 매칭용)
       result.data = {
         // 필수 필드
         title: String(title).trim(),
@@ -224,7 +224,7 @@
         body: String(body).trim() || String(summary).trim() || String(title).trim(), // 본문이 없으면 요약 또는 제목 사용
         slug: String(slug).trim(),
         published: Boolean(published),
-        
+        id: (rawData.id && typeof rawData.id === 'string') ? rawData.id : null,
         // 선택적 필드
         image: image,
         attachments: attachments,
@@ -304,17 +304,28 @@
   }
 
   /**
-   * 슬러그로 성명 찾기
+   * 슬러그로 성명 찾기 (공백·하이픈 정규화, id 폴백)
    * @param {Array<statementData>} statements - 성명 데이터 배열
-   * @param {string} slug - 찾을 슬러그
+   * @param {string} slug - 찾을 슬러그 (URL에서 온 값)
    * @returns {statementData|null} 찾은 성명 데이터 또는 null
    */
   function findStatementBySlug(statements, slug) {
-    if (!Array.isArray(statements) || !slug) {
+    if (!Array.isArray(statements) || slug == null) {
       return null;
     }
+    const normalized = String(slug).trim();
+    if (!normalized) return null;
+    const normalizedNoHyphen = normalized.replace(/-/g, '');
 
-    return statements.find(statement => statement.slug === slug) || null;
+    for (let i = 0; i < statements.length; i++) {
+      const s = statements[i];
+      const sSlug = String(s.slug || '').trim();
+      const sSlugNoHyphen = sSlug.replace(/-/g, '');
+      if (sSlug === normalized || sSlugNoHyphen === normalizedNoHyphen) return s;
+      const sId = (s.id || '').toString().replace(/-/g, '');
+      if (sId && (sId === normalizedNoHyphen || sId === normalized || sId.startsWith(normalizedNoHyphen) || normalizedNoHyphen.startsWith(sId))) return s;
+    }
+    return null;
   }
 
   /**

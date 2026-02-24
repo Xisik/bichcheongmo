@@ -23,15 +23,21 @@
       const urlObj = new URL(targetUrl);
       
       // 쿼리 파라미터 방식: ?statement=slug
-      const slug = urlObj.searchParams.get('statement');
-      if (slug) {
-        return decodeURIComponent(slug);
+      let slug = urlObj.searchParams.get('statement');
+      if (slug != null) {
+        try {
+          slug = decodeURIComponent(slug);
+        } catch (_) {}
+        return slug ? String(slug).trim() : null;
       }
       
       // 해시 라우팅 방식: #/statement/slug (선택적)
       const hash = urlObj.hash;
       if (hash && hash.startsWith('#/statement/')) {
-        return decodeURIComponent(hash.substring(12));
+        try {
+          slug = decodeURIComponent(hash.substring(12));
+        } catch (_) {}
+        return slug ? String(slug).trim() : null;
       }
       
       return null;
