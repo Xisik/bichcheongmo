@@ -496,7 +496,8 @@
   font-style: italic;
 }
 
-.activity-detail-footer{
+.activity-detail-footer,
+.statement-detail-footer{
   margin-top : 2rem;
   padding-top: 1.5rem;
   border-top : 1px solid var(--bd-0, var(--line));

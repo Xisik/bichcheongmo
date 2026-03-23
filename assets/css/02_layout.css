@@ -206,7 +206,7 @@ button.menu-toggle{
   }
 
   .nav.is-open{
-    max-height: 400px;
+    max-height: 600px;
     opacity   : 1;
     margin-top: 0.6rem;
   }
