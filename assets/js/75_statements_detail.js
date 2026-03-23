@@ -41,8 +41,8 @@
       return `__CODE_BLOCK_${id}__`;
     });
 
-    // 인라인 코드 처리 (`로 감싼 부분)
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // 인라인 코드 처리 (`로 감싼 부분) — 내용 이스케이프 필수
+    html = html.replace(/`([^`]+)`/g, (_, code) => `<code>${escapeHtml(code)}</code>`);
 
     // 줄 단위로 처리
     const lines = html.split('\n');
@@ -63,40 +63,27 @@
         continue;
       }
 
-      // 헤더 처리
+      // 헤더 처리 — 내용 이스케이프 (인라인 포맷팅은 이후 단계에서 적용)
       if (trimmed.startsWith('### ')) {
-        if (inList) {
-          processedLines.push('</ul>');
-          inList = false;
-        }
-        processedLines.push(`<h3>${trimmed.substring(4)}</h3>`);
+        if (inList) { processedLines.push('</ul>'); inList = false; }
+        processedLines.push(`<h3>${escapeHtml(trimmed.substring(4))}</h3>`);
         continue;
       }
       if (trimmed.startsWith('## ')) {
-        if (inList) {
-          processedLines.push('</ul>');
-          inList = false;
-        }
-        processedLines.push(`<h2>${trimmed.substring(3)}</h2>`);
+        if (inList) { processedLines.push('</ul>'); inList = false; }
+        processedLines.push(`<h2>${escapeHtml(trimmed.substring(3))}</h2>`);
         continue;
       }
       if (trimmed.startsWith('# ')) {
-        if (inList) {
-          processedLines.push('</ul>');
-          inList = false;
-        }
-        processedLines.push(`<h1>${trimmed.substring(2)}</h1>`);
+        if (inList) { processedLines.push('</ul>'); inList = false; }
+        processedLines.push(`<h1>${escapeHtml(trimmed.substring(2))}</h1>`);
         continue;
       }
 
-      // 리스트 처리
+      // 리스트 처리 — 내용 이스케이프
       if (trimmed.startsWith('- ')) {
-        if (!inList) {
-          processedLines.push('<ul>');
-          inList = true;
-        }
-        const content = trimmed.substring(2);
-        processedLines.push(`<li>${content}</li>`);
+        if (!inList) { processedLines.push('<ul>'); inList = true; }
+        processedLines.push(`<li>${escapeHtml(trimmed.substring(2))}</li>`);
         continue;
       }
 
@@ -122,16 +109,21 @@
     // 기울임 처리 (*text*) - ** 다음에 오는 *만 처리
     html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
 
-    // 링크 처리 ([text](url))
-    // 외부 링크는 새 탭에서 열리도록, 내부 링크는 같은 탭에서 열리도록
+    // 링크 처리 ([text](url)) — 안전한 프로토콜만 허용
+    const SAFE_URL = /^(https?:|mailto:|tel:|\/|#)/i;
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
-      // 외부 링크 확인
-      const isExternal = url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
-      if (isExternal) {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-      } else {
-        return `<a href="${url}">${text}</a>`;
+      const trimmedUrl = url.trim();
+      // javascript:, data:, vbscript: 등 위험 프로토콜 차단
+      if (!SAFE_URL.test(trimmedUrl)) {
+        return escapeHtml(text);
       }
+      const isExternal = /^https?:|^\/\//i.test(trimmedUrl);
+      const safeUrl = escapeHtml(trimmedUrl);
+      const safeText = text; // 이미 이전 단계에서 inline 포맷 처리됨
+      if (isExternal) {
+        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
+      }
+      return `<a href="${safeUrl}">${safeText}</a>`;
     });
 
     // 줄바꿈 처리 (두 개의 공백 + 줄바꿈)
@@ -173,6 +165,67 @@
   }
 
   /**
+   * HTML 새니타이저 — script/iframe 등 위험 태그 및 이벤트 핸들러 속성 제거
+   * DOMParser를 사용하여 브라우저가 파싱한 DOM을 순회하며 정제
+   * @param {string} html - 정제할 HTML 문자열
+   * @returns {string} 정제된 HTML 문자열
+   */
+  function sanitizeHtml(html) {
+    const ALLOWED_TAGS = new Set([
+      'p','br','strong','em','b','i','u','s','ul','ol','li',
+      'h1','h2','h3','h4','h5','h6','a','img','blockquote',
+      'code','pre','hr','span','div','table','thead','tbody',
+      'tr','th','td','figure','figcaption','time'
+    ]);
+    const ALLOWED_ATTRS = new Set([
+      'href','src','alt','title','class','id','target','rel',
+      'datetime','aria-label','role','tabindex','loading',
+      'width','height','colspan','rowspan'
+    ]);
+    const SAFE_URL_ATTR = /^(https?:|mailto:|tel:|\/|#)/i;
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    function walk(node) {
+      const children = Array.from(node.childNodes);
+      for (const child of children) {
+        if (child.nodeType === Node.TEXT_NODE) continue;
+        if (child.nodeType !== Node.ELEMENT_NODE) {
+          child.remove();
+          continue;
+        }
+        const tag = child.tagName.toLowerCase();
+        if (!ALLOWED_TAGS.has(tag)) {
+          // 허용되지 않은 태그 → 텍스트 노드로 교체
+          child.replaceWith(document.createTextNode(child.textContent));
+          continue;
+        }
+        // 속성 정제
+        for (const attr of Array.from(child.attributes)) {
+          if (!ALLOWED_ATTRS.has(attr.name)) {
+            child.removeAttribute(attr.name);
+          } else if ((attr.name === 'href' || attr.name === 'src') &&
+                     !SAFE_URL_ATTR.test(attr.value.trim())) {
+            child.removeAttribute(attr.name);
+          }
+        }
+        // 외부 링크에 noopener 강제
+        if (tag === 'a') {
+          const href = child.getAttribute('href') || '';
+          if (/^https?:/i.test(href)) {
+            child.setAttribute('target', '_blank');
+            child.setAttribute('rel', 'noopener noreferrer');
+          }
+        }
+        walk(child);
+      }
+    }
+
+    walk(doc.body);
+    return doc.body.innerHTML;
+  }
+
+  /**
    * 본문 내용 렌더링 (마크다운 또는 HTML)
    * @param {string} body - 본문 내용 (마크다운 또는 HTML)
    * @returns {string} 렌더링된 HTML
@@ -186,9 +239,8 @@
     const hasHtmlTags = /<[a-z][\s\S]*>/i.test(body);
     
     if (hasHtmlTags) {
-      // 이미 HTML인 경우 그대로 반환 (XSS 방지를 위해 DOMPurify 같은 라이브러리 권장)
-      // 현재는 기본적인 이스케이프만 수행
-      return body;
+      // HTML 콘텐츠: 위험 태그/속성 제거 후 반환
+      return sanitizeHtml(body);
     } else {
       // 마크다운 파싱
       return parseMarkdown(body);
@@ -200,7 +252,7 @@
    * @param {Object} statement - 성명 데이터
    * @returns {string} 성명 상세 페이지 HTML
    */
-  function createstatementDetail(statement) {
+  function createStatementDetail(statement) {
     if (!statement) {
       return '<div class="card content"><p>성명을 찾을 수 없습니다.</p></div>';
     }
@@ -272,7 +324,7 @@
    * @param {HTMLElement|string} container - 렌더링할 컨테이너 요소 또는 선택자
    * @returns {boolean} 렌더링 성공 여부
    */
-  function renderstatementDetail(statement, container) {
+  function renderStatementDetail(statement, container) {
     const $ = ui.$ || ((sel) => document.querySelector(sel));
     const containerEl = typeof container === 'string' ? $(container) : container;
 
@@ -292,7 +344,7 @@
       return false;
     }
 
-    containerEl.innerHTML = createstatementDetail(statement);
+    containerEl.innerHTML = createStatementDetail(statement);
     return true;
   }
 
@@ -320,7 +372,7 @@
   // Public API
   ui.statements = ui.statements || {};
   ui.statements.detail = {
-    renderstatementDetail: renderstatementDetail,
+    renderStatementDetail: renderStatementDetail,
     showErrorState: showErrorState,
     renderBody: renderBody,
     parseMarkdown: parseMarkdown,

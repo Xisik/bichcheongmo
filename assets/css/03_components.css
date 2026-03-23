@@ -7,25 +7,11 @@
    Header (logo + nav + actions) visuals
 ========================= */
 .header-bar{
-  position        : relative;
-
-  background-color: var(--text-secondary);
-  border          : solid var(--text-shadow);
-  border-width    : 0 0.2rem 0.2rem 0;
-  box-shadow      : var(--shadow-2);
-
-  padding         : 0.35rem 0.75rem 0.35rem 0.75rem;
-}
-
-.header-bar::before{
-  content : '';
-  position: absolute;
-  top     : 0;
-  left    : 0;
-  bottom  : 0;
-
-  width   : 0.35rem;
-  background: var(--accent-ribbon);
+  display        : flex;
+  align-items    : center;
+  gap            : 0 1rem;
+  background-color: transparent;
+  padding        : 0.5rem 0;
 }
 
 .brand-link{
@@ -36,12 +22,12 @@
 }
 
 .logo{
-  width     : 3.0rem;  /* 메뉴 버튼, 다크 모드 버튼과 동일한 크기 */
-  height    : 3.0rem;  /* 메뉴 버튼, 다크 모드 버튼과 동일한 크기 */
-  object-fit: cover;
-  display   : block;
-
-  border    : 0.1rem solid var(--text-shadow);
+  width        : 3.0rem;
+  height       : 3.0rem;
+  object-fit   : cover;
+  display      : block;
+  border       : 1px solid var(--bd-1, var(--line));
+  border-radius: var(--r, 6px);
 }
 
 /* Nav visuals (layout behavior is in 02_layout.css) */
@@ -51,42 +37,68 @@
 }
 
 .nav-link{
+  position       : relative;
   text-decoration: none;
   padding        : 0.35rem 0.45rem;
-  border-bottom  : 0.1rem solid transparent;
+  font-size      : 0.85rem;
+  font-weight    : 500;
+  color          : var(--tx-1, var(--text-shadow));
+  letter-spacing : 0.02rem;
+  transition     : color 0.2s;
 }
 
-/* 모바일: nav-link를 카드처럼 전체 영역 클릭 가능하게 */
-@media (max-width: 640px){
-  .nav-link{
-    display        : block;
-    width          : 100%;
-    text-align     : center;
-    padding        : 0.75rem 1rem;  /* 클릭 영역 넓게 */
-    border         : none;  /* 테두리 제거 */
-    background-color: var(--surface);
-    border-radius  : 0.2rem;
-    transition     : background-color 0.2s, box-shadow 0.2s;
-  }
-  
-  .nav-link:hover,
-  .nav-link:active{
-    background-color: var(--surface-strong);
-    box-shadow      : var(--shadow-1);
-  }
-  
-  .nav-link.is-active{
-    background-color: var(--text-shadow);
-    border-bottom   : none;  /* 테두리 제거 */
-  }
+/* 프라이드 그라디언트 언더라인 */
+.nav-link::after{
+  content   : '';
+  position  : absolute;
+  bottom    : 0;
+  left      : 0.45rem;
+  right     : 0.45rem;
+  height    : 2px;
+  background: var(--accent-ribbon);
+  transform : scaleX(0);
+  transition: transform 0.2s ease;
 }
 
 .nav-link:hover{
-  border-bottom-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.nav-link:hover::after,
+.nav-link.is-active::after{
+  transform: scaleX(1);
 }
 
 .nav-link.is-active{
-  border-bottom-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+/* 모바일: nav-link 카드 스타일 */
+@media (max-width: 640px){
+  .nav-link{
+    display         : block;
+    width           : 100%;
+    text-align      : center;
+    padding         : 0.75rem 1rem;
+    background-color: var(--bg-1, var(--surface));
+    border          : 1px solid var(--bd-1, var(--line));
+    border-radius   : var(--r, 6px);
+    transition      : background-color 0.2s, border-color 0.2s;
+  }
+
+  .nav-link::after{ display: none; }
+
+  .nav-link:hover,
+  .nav-link:active{
+    background-color: var(--bg-2, var(--surface-strong));
+    border-color    : var(--bd-2, var(--text-shadow));
+  }
+
+  .nav-link.is-active{
+    background-color: var(--bg-2, var(--surface-strong));
+    border-color    : var(--bd-2, var(--text-shadow));
+    color           : var(--text-primary);
+  }
 }
 
 /* =========================
@@ -95,23 +107,30 @@
 .card{
   position        : relative;
   background-color: var(--surface-strong);
-  padding         : 1rem 1rem 1.25rem 1rem;
+  padding         : 1rem 1rem 1.25rem 1.4rem;
 
-  border          : solid var(--text-shadow);
-  border-width    : 0 0.2rem 0.2rem 0;
-  box-shadow      : var(--shadow-1);
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+  box-shadow      : none;
+
+  transition      : border-color 0.2s;
+}
+
+.card:hover{
+  border-color: var(--bd-2, var(--text-shadow));
 }
 
 .card::before{
-  content : '';
-  position: absolute;
-  top     : 0;
-  left    : 0;
-  bottom  : 0;
+  content      : '';
+  position     : absolute;
+  top          : 0;
+  left         : 0;
+  bottom       : 0;
 
-  width   : 0.30rem;
-  background-color: var(--text-primary);
-  opacity : 0.35;
+  width        : 4px;
+  background   : var(--accent-ribbon);
+  border-radius: var(--r, 6px) 0 0 var(--r, 6px);
+  opacity      : 1;
 }
 
 .card p{ margin-bottom: 0.75rem; }
@@ -126,13 +145,22 @@
   text-decoration : none;
 
   padding         : 0.6rem 0.5rem;
-  background-color: var(--text-shadow);
+  background-color: var(--bg-2, var(--text-shadow));
   color           : var(--text-primary);
+
+  border          : 1px solid var(--bd-1, var(--text-shadow));
+  border-radius   : var(--r, 6px);
+
+  font-size       : 0.8rem;
+  font-weight     : 600;
+  letter-spacing  : 0.04rem;
+  text-transform  : uppercase;
 
   position        : relative;
   z-index         : 1;
+  overflow        : hidden;
 
-  transition      : color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  transition      : color 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
 .btn::after{
@@ -152,7 +180,8 @@
 .btn:hover{
   background-color: transparent;
   color           : var(--text-secondary);
-  box-shadow      : 0.2em 0.2em 0.1em 0 var(--text-shadow);
+  border-color    : var(--bd-2, var(--text-shadow));
+  box-shadow      : none;
 }
 
 .btn:hover::after{ width: 100%; }
@@ -202,14 +231,23 @@
 .pill{
   text-decoration : none;
   padding         : 0.55rem 0.75rem;
-  background-color: var(--text-secondary);
+  background-color: var(--bg-1, var(--surface));
 
-  border          : solid var(--text-shadow);
-  border-width    : 0 0.2rem 0.2rem 0;
-  box-shadow      : var(--shadow-1);
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+
+  font-size       : 0.78rem;
+  font-weight     : 600;
+  letter-spacing  : 0.03rem;
+
+  transition      : border-color 0.2s, color 0.2s;
 }
 
-.pill:hover{ box-shadow: var(--shadow-2); }
+.pill:hover{
+  border-color: var(--bd-2, var(--text-shadow));
+  color       : var(--text-primary);
+  box-shadow  : none;
+}
 
 /* =========================
    Helpers / content
@@ -218,8 +256,8 @@
 .content{ margin: 0 0 1rem 0; }
 
 .small{
-  font-size: 0.95rem;
-  color    : rgba(69, 65, 56, 0.85);
+  font-size: 0.85rem;
+  color    : var(--tx-2, var(--text-shadow));
 }
 
 /* =========================
@@ -231,11 +269,6 @@
 
 .activity-card{
   margin-bottom: 1rem;
-  transition: box-shadow 0.2s;
-}
-
-.activity-card:hover{
-  box-shadow: var(--shadow-2);
 }
 
 .activity-header{
@@ -281,11 +314,6 @@
 ========================= */
 .statement-card{
   margin-bottom: 1rem;
-  transition: box-shadow 0.2s;
-}
-
-.statement-card:hover{
-  box-shadow: var(--shadow-2);
 }
 
 .statement-header{
@@ -346,11 +374,16 @@
 }
 
 .activity-category{
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  background-color: var(--text-shadow);
-  font-size: 0.85rem;
-  border-radius: 0.2rem;
+  display      : inline-block;
+  padding      : 0.2rem 0.55rem;
+  background-color: var(--bg-2, var(--text-secondary));
+  border       : 1px solid var(--bd-2, var(--text-shadow));
+  border-radius: 3px;
+  font-size    : 0.72rem;
+  font-weight  : 600;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  color        : var(--tx-1, var(--text-shadow));
 }
 
 .activity-detail-date{
@@ -377,10 +410,12 @@
 }
 
 .activity-image img{
-  width: 100%;
-  height: auto;
-  display: block;
-  border: 0.1rem solid var(--text-shadow);
+  width        : 100%;
+  height       : auto;
+  display      : block;
+  border       : 1px solid var(--bd-1, var(--line));
+  border-radius: var(--r, 6px);
+  opacity      : 0.85;
 }
 
 .activity-detail-body{
@@ -422,18 +457,20 @@
 }
 
 .activity-detail-body code{
-  background-color: var(--text-shadow);
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.2rem;
-  font-size: 0.9em;
+  background-color: var(--bg-2, var(--text-secondary));
+  border          : 1px solid var(--bd-1, var(--line));
+  padding         : 0.15rem 0.4rem;
+  border-radius   : 3px;
+  font-size       : 0.875em;
 }
 
 .activity-detail-body pre{
-  background-color: var(--text-shadow);
-  padding: 1rem;
-  border-radius: 0.2rem;
-  overflow-x: auto;
-  margin: 1rem 0;
+  background-color: var(--bg-2, var(--text-secondary));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+  padding         : 1rem;
+  overflow-x      : auto;
+  margin          : 1rem 0;
 }
 
 .activity-detail-body pre code{
@@ -460,9 +497,9 @@
 }
 
 .activity-detail-footer{
-  margin-top: 2rem;
+  margin-top : 2rem;
   padding-top: 1.5rem;
-  border-top: 0.1rem solid var(--text-shadow);
+  border-top : 1px solid var(--bd-0, var(--line));
 }
 
 /* =========================
@@ -480,9 +517,10 @@
 }
 
 .diff-col{
-  background-color: var(--surface);
+  background-color: var(--bg-1, var(--surface));
   padding         : 0.75rem;
-  border          : 0.1rem solid var(--text-shadow);
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
 }
 
 /* =========================
@@ -539,9 +577,16 @@
   justify-content: space-between;
   gap            : 0.75rem;
 
-  background-color: var(--surface);
-  border          : 0.1rem solid var(--text-shadow);
+  background-color: var(--bg-1, var(--surface));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
   padding         : 0.75rem;
+
+  transition      : border-color 0.2s;
+}
+
+.contact-item:hover{
+  border-color: var(--bd-2, var(--text-shadow));
 }
 
 .contact-name{ 
@@ -622,13 +667,20 @@
 }
 
 .join-item{
-  background-color: var(--surface);
-  border          : 0.1rem solid var(--text-shadow);
+  background-color: var(--bg-1, var(--surface));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
   padding         : 0.75rem;
-  min-height      : 120px; /* 정회원/준회원과 비슷한 높이 유지 */
+  min-height      : 120px;
   display         : flex;
   flex-direction  : column;
   justify-content : space-between;
+
+  transition      : border-color 0.2s;
+}
+
+.join-item:hover{
+  border-color: var(--bd-2, var(--text-shadow));
 }
 
 .join-item h2,
@@ -647,30 +699,31 @@
 
 /* join-footer: full width inside grid */
 .join-footer{
-  grid-column: 1 / -1;
-  width      : 100%;
+  grid-column  : 1 / -1;
+  width        : 100%;
 
-  background-color: var(--surface-strong);
-  border          : solid var(--text-shadow);
-  border-width    : 0 0.2rem 0.2rem 0;
-  box-shadow      : var(--shadow-2);
+  background-color: var(--bg-1, var(--surface-strong));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+  box-shadow      : none;
   padding         : 0 0.7rem;
 }
 
 /* info-box: closed has no padding; open has padding */
 .info-box{
-  margin-top      : 0.75rem;
+  margin-top   : 0.75rem;
 
-  background-color: var(--surface);
-  border          : 0.1rem solid var(--text-shadow);
-  box-shadow      : var(--shadow-1);
+  background-color: var(--bg-1, var(--surface));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+  box-shadow      : none;
 
-  overflow        : hidden;
-  max-height      : 0;
-  opacity         : 0;
+  overflow     : hidden;
+  max-height   : 0;
+  opacity      : 0;
 
-  padding         : 0; /* closed: no padding */
-  transition      : max-height 240ms ease, opacity 180ms ease, padding 240ms ease;
+  padding      : 0;
+  transition   : max-height 240ms ease, opacity 180ms ease, padding 240ms ease;
 }
 
 .info-box.is-open{

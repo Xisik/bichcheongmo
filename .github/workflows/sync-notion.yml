@@ -6,8 +6,6 @@ on:
   # 여러 cron을 추가하여 더 자주 체크 (스케줄 실행의 불확실성 보완)
   schedule:
     - cron: '*/5 * * * *'   # 매 5분마다
-    - cron: '*/6 * * * *'   # 매 6분마다 (5분 간격과 겹치지 않도록)
-    - cron: '*/7 * * * *'   # 매 7분마다 (더 자주 체크)
   # 수동 실행
   workflow_dispatch:
   # 외부에서 트리거 가능 (repository_dispatch)

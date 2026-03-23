@@ -22,18 +22,34 @@ class NotionClient {
    * @param {Object} [options.body] - 요청 본문 데이터
    * @returns {Promise<Object>} 응답 데이터
    */
-  async request(path, { method = "GET", body } = {}) {
+  async request(path, { method = "GET", body } = {}, retries = 3) {
     const url = `${BASE_URL}${path}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
 
-    const res = await fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        "Notion-Version": this.notionVersion,
-        "Content-Type": "application/json",
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    let res;
+    try {
+      res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Notion-Version": this.notionVersion,
+          "Content-Type": "application/json",
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    // 429 Rate Limit: 지수 백오프 후 재시도
+    if (res.status === 429 && retries > 0) {
+      const retryAfter = parseInt(res.headers.get('Retry-After') || '1', 10);
+      const delay = Math.max(retryAfter * 1000, 1000) * (4 - retries);
+      await new Promise(r => setTimeout(r, delay));
+      return this.request(path, { method, body }, retries - 1);
+    }
 
     const text = await res.text();
     let json;
@@ -68,8 +84,10 @@ class NotionClient {
     
     const allPages = [];
     let cursor = undefined;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100; // 최대 10,000개 항목
 
-    while (true) {
+    while (iterations++ < MAX_ITERATIONS) {
       const body = { page_size: 100 };
       if (cursor) {
         body.start_cursor = cursor;
@@ -101,8 +119,10 @@ class NotionClient {
     
     const blocks = [];
     let cursor = undefined;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100;
 
-    while (true) {
+    while (iterations++ < MAX_ITERATIONS) {
       const qs = new URLSearchParams();
       qs.set("page_size", "100");
       if (cursor) qs.set("start_cursor", cursor);

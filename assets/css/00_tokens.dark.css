@@ -1,58 +1,90 @@
-/* 1) 수동 토글: data-theme="dark" */
-:root[data-theme="dark"]{
-  color-scheme: dark;
+/* =====================================================
+   라이트 모드 오버라이드
+   (기본 테마가 다크이므로, 라이트 전환 시 적용)
+===================================================== */
 
-  --main-bg-color   : #171310;
-  /* 격자는 은은하게 */
-  --bg-grid-color   : rgba(238, 232, 225, 0.06);
-  --bg-grid-2-color : rgba(238, 232, 225, 0);
+/* 1) 수동 토글: data-theme="light" */
+:root[data-theme="light"] {
+  color-scheme: light;
 
-  --text-primary    : #EEE8E1;
-  --text-secondary  : #1F1915;
-  --text-shadow     : #4B3E34;
+  --bg-0:  #f2ede8;
+  --bg-1:  #faf7f4;
+  --bg-2:  #ede7e2;
 
-  --surface         : rgba(31, 25, 21, 0.78);
-  --surface-strong  : rgba(31, 25, 21, 0.92);
-  --line            : rgba(238, 232, 225, 0.16);
+  --bd-0:  #ddd5ce;
+  --bd-1:  #c8bdb6;
+  --bd-2:  #a89890;
 
-  --shadow-1        : 0.25rem 0.25rem 0.0rem rgba(0, 0, 0, 0.45);
-  --shadow-2        : 0.35rem 0.35rem 0.0rem rgba(0, 0, 0, 0.38);
+  --tx-0:  #1a1614;
+  --tx-1:  #4a4240;
+  --tx-2:  #7a7068;
 
-  --accent-ribbon   : linear-gradient(90deg,
-                      rgba(220, 92, 92, 0.32),
-                      rgba(220, 158, 92, 0.32),
-                      rgba(220, 206, 92, 0.32),
-                      rgba(92, 170, 120, 0.32),
-                      rgba(92, 130, 220, 0.32),
-                      rgba(150, 92, 210, 0.32));
+  --pride-red:    #c42424;
+  --pride-orange: #b05e18;
+  --pride-yellow: #9e8010;
+  --pride-green:  #1e7040;
+  --pride-blue:   #2a56a0;
+  --pride-purple: #6634a0;
+
+  --accent-ribbon: linear-gradient(90deg,
+    var(--pride-red),
+    var(--pride-orange),
+    var(--pride-yellow),
+    var(--pride-green),
+    var(--pride-blue),
+    var(--pride-purple));
+
+  --main-bg-color:  var(--bg-0);
+  --text-primary:   var(--tx-0);
+  --text-secondary: var(--bg-1);
+  --text-shadow:    var(--tx-2);
+  --surface:        var(--bg-1);
+  --surface-strong: var(--bg-1);
+  --line:           var(--bd-0);
+  --shadow-1:       none;
+  --shadow-2:       none;
 }
 
-/* 2) 시스템 다크 자동: data-theme="light"로 강제하지 않았을 때만 */
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme: dark;
+/* 2) 시스템 라이트: data-theme="dark"로 강제하지 않았을 때만 */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
 
-    --main-bg-color   : #171310;
-    --bg-grid-color   : rgba(238, 232, 225, 0.06);
-    --bg-grid-2-color : rgba(238, 232, 225, 0);
+    --bg-0:  #f2ede8;
+    --bg-1:  #faf7f4;
+    --bg-2:  #ede7e2;
 
-    --text-primary    : #EEE8E1;
-    --text-secondary  : #1F1915;
-    --text-shadow     : #4B3E34;
+    --bd-0:  #ddd5ce;
+    --bd-1:  #c8bdb6;
+    --bd-2:  #a89890;
 
-    --surface         : rgba(31, 25, 21, 0.78);
-    --surface-strong  : rgba(31, 25, 21, 0.92);
-    --line            : rgba(238, 232, 225, 0.16);
+    --tx-0:  #1a1614;
+    --tx-1:  #4a4240;
+    --tx-2:  #7a7068;
 
-    --shadow-1        : 0.25rem 0.25rem 0.0rem rgba(0, 0, 0, 0.45);
-    --shadow-2        : 0.35rem 0.35rem 0.0rem rgba(0, 0, 0, 0.38);
+    --pride-red:    #c42424;
+    --pride-orange: #b05e18;
+    --pride-yellow: #9e8010;
+    --pride-green:  #1e7040;
+    --pride-blue:   #2a56a0;
+    --pride-purple: #6634a0;
 
-    --accent-ribbon   : linear-gradient(90deg,
-                        rgba(220, 92, 92, 0.32),
-                        rgba(220, 158, 92, 0.32),
-                        rgba(220, 206, 92, 0.32),
-                        rgba(92, 170, 120, 0.32),
-                        rgba(92, 130, 220, 0.32),
-                        rgba(150, 92, 210, 0.32));
+    --accent-ribbon: linear-gradient(90deg,
+      var(--pride-red),
+      var(--pride-orange),
+      var(--pride-yellow),
+      var(--pride-green),
+      var(--pride-blue),
+      var(--pride-purple));
+
+    --main-bg-color:  var(--bg-0);
+    --text-primary:   var(--tx-0);
+    --text-secondary: var(--bg-1);
+    --text-shadow:    var(--tx-2);
+    --surface:        var(--bg-1);
+    --surface-strong: var(--bg-1);
+    --line:           var(--bd-0);
+    --shadow-1:       none;
+    --shadow-2:       none;
   }
 }

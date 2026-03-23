@@ -59,11 +59,9 @@ function extractDate(property) {
   const dateValue = property.date;
   if (!dateValue || !dateValue.start) return null;
 
-  try {
-    return new Date(dateValue.start);
-  } catch (error) {
-    return null;
-  }
+  const date = new Date(dateValue.start);
+  if (isNaN(date.getTime())) return null;
+  return date;
 }
 
 /**

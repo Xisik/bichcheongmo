@@ -1,53 +1,55 @@
 .modal {
   position: fixed;
-  inset: 0;
-  display: none;
-  z-index: 50;
+  inset   : 0;
+  display : none;
+  z-index : 50;
 }
 
 .modal.is-open { display: block; }
 
 .modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(69, 65, 56, 0.35);
+  position  : absolute;
+  inset     : 0;
+  background: rgba(0, 0, 0, 0.72);
 }
 
 .modal-dialog {
-  position: relative;
-  width: min(860px, calc(100% - 2rem));
-  margin: 6rem auto 2rem auto;
+  position : relative;
+  width    : min(860px, calc(100% - 2rem));
+  margin   : 6rem auto 2rem auto;
 
-  background-color: var(--surface-strong);
-  border: solid var(--text-shadow);
-  border-width: 0 0.2rem 0.2rem 0;
-  box-shadow: var(--shadow-2);
+  background-color: var(--bg-1, var(--surface-strong));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+  box-shadow      : none;
+  overflow        : hidden;
 }
 
-.modal-dialog:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 0.35rem;
-  background: var(--accent-ribbon);
+/* 프라이드 리본: 모달 왼쪽 세로 줄 */
+.modal-dialog::before {
+  content      : '';
+  position     : absolute;
+  top          : 0;
+  left         : 0;
+  bottom       : 0;
+  width        : 4px;
+  background   : var(--accent-ribbon);
 }
 
 .modal-header,
 .modal-footer {
-  display: flex;
-  align-items: center;
+  display        : flex;
+  align-items    : center;
   justify-content: space-between;
-  gap: 1rem;
+  gap            : 1rem;
 
-  padding: 0.9rem 1rem;
-  background-color: var(--text-secondary);
-  border-bottom: 0.1rem solid var(--text-shadow);
+  padding         : 0.9rem 1rem;
+  background-color: var(--bg-2, var(--text-secondary));
+  border-bottom   : 1px solid var(--bd-0, var(--line));
 }
 
 .modal-footer {
-  border-top: 0.1rem solid var(--text-shadow);
+  border-top   : 1px solid var(--bd-0, var(--line));
   border-bottom: none;
 }
 
@@ -60,14 +62,17 @@
 }
 
 .icon-btn {
-  width: 2.2rem;
-  height: 2.2rem;
-  background-color: var(--text-shadow);
-  border: none;
-  cursor: pointer;
-  position: relative;
+  width           : 2.2rem;
+  height          : 2.2rem;
+  background-color: var(--bg-2, var(--text-secondary));
+  border          : 1px solid var(--bd-1, var(--line));
+  border-radius   : var(--r, 6px);
+  cursor          : pointer;
+  position        : relative;
+  transition      : border-color 0.2s;
 }
 
 .icon-btn:hover {
-  box-shadow: 0.2em 0.2em 0.1em 0 var(--text-shadow);
+  border-color: var(--bd-2, var(--text-shadow));
+  box-shadow  : none;
 }
