@@ -193,6 +193,15 @@
   width           : 100%;
 }
 
+/* <button class="btn"> — 기본 버튼 고정 정사각형 크기 해제 */
+button.btn {
+  inline-size : auto;
+  block-size  : auto;
+  aspect-ratio: auto;
+  white-space : normal;
+  font-family : inherit;
+}
+
 .btn-primary{
   background-image: var(--accent-ribbon);
   background-size : 100% 100%;

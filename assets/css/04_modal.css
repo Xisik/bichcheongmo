@@ -1,8 +1,9 @@
 .modal {
-  position: fixed;
-  inset   : 0;
-  display : none;
-  z-index : 50;
+  position  : fixed;
+  inset     : 0;
+  display   : none;
+  z-index   : 50;
+  overflow-y: auto; /* 모달 내용이 뷰포트보다 길면 스크롤 */
 }
 
 .modal.is-open { display: block; }
@@ -70,6 +71,13 @@
   cursor          : pointer;
   position        : relative;
   transition      : border-color 0.2s;
+}
+
+/* button 요소일 때 기본 버튼(3rem) 크기 오버라이드 */
+button.icon-btn {
+  inline-size : 2.2rem;
+  block-size  : 2.2rem;
+  aspect-ratio: auto;
 }
 
 .icon-btn:hover {
