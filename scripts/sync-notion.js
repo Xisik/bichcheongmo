@@ -41,6 +41,12 @@ async function downloadAndSaveImage(imageUrl, activityId) {
   const localPath = path.join(imagesDir, filename);
   const publicPath = `/assets/img/activities/${filename}`;
 
+  // 이미 다운로드된 파일이 있으면 재다운로드 생략 (멱등성)
+  if (fs.existsSync(localPath)) {
+    console.log(`  ↩ Image already exists, skipping: ${filename}`);
+    return Promise.resolve(publicPath);
+  }
+
   return new Promise((resolve) => {
     const protocol = imageUrl.startsWith('https') ? https : http;
     const request = protocol.get(imageUrl, (res) => {
