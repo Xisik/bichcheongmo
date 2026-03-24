@@ -39,7 +39,7 @@ async function downloadAndSaveImage(imageUrl, activityId) {
 
   const filename = `${activityId}${ext}`;
   const localPath = path.join(imagesDir, filename);
-  const publicPath = `/assets/img/activities/${filename}`;
+  const publicPath = `./assets/img/activities/${filename}`;
 
   // 이미 다운로드된 파일이 있으면 재다운로드 생략 (멱등성)
   if (fs.existsSync(localPath)) {
