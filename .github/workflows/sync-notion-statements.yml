@@ -63,15 +63,16 @@ jobs:
           fi
           node scripts/sync-notion-statements.js
 
-      - name: Commit and push statements.json
+      - name: Commit and push statements.json and images
         run: |
-          # statements.json만 add (package-lock.json 등 다른 파일 제외)
+          # statements.json과 다운로드된 이미지 파일 add
           git add data/statements.json
+          git add assets/img/statements/ 2>/dev/null || true
           
           # 변경 사항 확인 (내용이 실제로 변경되었는지 확인)
           if ! git diff --staged --quiet; then
             # 변경 사항이 있으면 커밋 및 푸시
-            echo "Changes detected in statements.json, committing..."
+            echo "Changes detected, committing..."
             git commit -m "chore: sync statements from Notion"
             git push origin HEAD:"${GITHUB_REF_NAME}" || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}")
             echo "✓ Successfully synced and pushed changes"

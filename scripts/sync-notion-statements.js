@@ -10,8 +10,69 @@
 
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 const NotionClient = require('./notion-client');
 const { transformNotionPage } = require('./notion-transformer');
+
+/**
+ * Notion S3 임시 URL에서 이미지를 다운로드하고 정적 파일로 저장
+ */
+async function downloadAndSaveImage(imageUrl, statementId) {
+  if (!imageUrl) return null;
+
+  const imagesDir = path.join(__dirname, '..', 'assets', 'img', 'statements');
+  if (!fs.existsSync(imagesDir)) {
+    fs.mkdirSync(imagesDir, { recursive: true });
+  }
+
+  let ext = '.jpg';
+  try {
+    const urlPath = new URL(imageUrl).pathname;
+    const urlExt = path.extname(urlPath).split('?')[0];
+    if (urlExt) ext = urlExt.toLowerCase();
+  } catch {}
+
+  const filename = `${statementId}${ext}`;
+  const localPath = path.join(imagesDir, filename);
+  const publicPath = `/assets/img/statements/${filename}`;
+
+  return new Promise((resolve) => {
+    const protocol = imageUrl.startsWith('https') ? https : http;
+    const request = protocol.get(imageUrl, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        downloadAndSaveImage(res.headers.location, statementId).then(resolve);
+        return;
+      }
+      if (res.statusCode !== 200) {
+        console.warn(`  WARNING: Image download failed (status ${res.statusCode}) for statement ${statementId}`);
+        resolve(null);
+        return;
+      }
+      const file = fs.createWriteStream(localPath);
+      res.pipe(file);
+      file.on('finish', () => {
+        file.close();
+        console.log(`  ✓ Image saved: ${filename}`);
+        resolve(publicPath);
+      });
+      file.on('error', (err) => {
+        fs.unlink(localPath, () => {});
+        console.warn(`  WARNING: Failed to save image for statement ${statementId}: ${err.message}`);
+        resolve(null);
+      });
+    });
+    request.on('error', (err) => {
+      console.warn(`  WARNING: Image download error for statement ${statementId}: ${err.message}`);
+      resolve(null);
+    });
+    request.setTimeout(15000, () => {
+      request.destroy();
+      console.warn(`  WARNING: Image download timed out for statement ${statementId}`);
+      resolve(null);
+    });
+  });
+}
 
 // 환경 변수 확인 (성명서 전용 API 키 우선, 없으면 공용 NOTION_API_KEY 사용)
 const NOTION_API_KEY = process.env.NOTION_STATEMENTS_API_KEY || process.env.NOTION_API_KEY;
@@ -98,6 +159,12 @@ async function fetchNotionData() {
         const statement = transformNotionPage(page, blocks);
         
         if (statement) {
+          // Notion S3 임시 URL이면 다운로드하여 정적 파일로 교체
+          if (statement.image && statement.image.includes('prod-files-secure.s3')) {
+            console.log(`  Downloading image for: ${statement.title}`);
+            const localPath = await downloadAndSaveImage(statement.image, statement.id);
+            statement.image = localPath; // 다운로드 실패 시 null
+          }
           statements.push(statement);
           console.log(`✓ Transformed: ${statement.title}`);
         } else {

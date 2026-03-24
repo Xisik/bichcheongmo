@@ -267,7 +267,7 @@
       const imageAlt = `${escapeHtml(title)} 활동 이미지`;
       imageHtml = `
         <div class="activity-image" role="img" aria-label="${imageAlt}">
-          <img src="${escapeHtml(image)}" alt="${imageAlt}" loading="lazy">
+          <img src="${escapeHtml(image)}" alt="${imageAlt}" loading="lazy" onerror="this.closest('.activity-image').style.display='none'">
         </div>
       `;
     }
