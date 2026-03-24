@@ -13,6 +13,12 @@ on:
   # 수동 실행
   workflow_dispatch:
 
+# Node 24 강제 적용 (Node 20 deprecated 경고 해소)
+# actions/checkout, actions/configure-pages 등이 아직 Node 24 빌드를
+# 릴리즈하지 않았으므로 env var 방식이 현 시점의 올바른 해결책
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   pages: write
@@ -39,7 +45,9 @@ jobs:
         uses: actions/configure-pages@v5        # v5: Node 24 지원 (v4 → v5 메이저 업)
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3.0.1  # Node 24 compatible
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: '.'    # 누락 복구: 기본값 _site/ 가 아닌 레포 루트를 배포
 
       - name: Deploy to GitHub Pages
         id: deployment

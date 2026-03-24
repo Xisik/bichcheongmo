@@ -17,6 +17,10 @@ on:
   # push 트리거 제거: Notion sync는 schedule/repository_dispatch/workflow_dispatch만 사용
   # JSON 업데이트 후 push는 [skip ci] 없이 하여 pages-deploy.yml이 자동 배포하도록
 
+# Node 24 강제 적용 (Node 20 deprecated 경고 해소)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   sync-notion:
     runs-on: ubuntu-latest
