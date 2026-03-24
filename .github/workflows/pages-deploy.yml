@@ -33,17 +33,14 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2          # Node 24 compatible
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5        # v5: Node 24 지원 (v4 → v5 메이저 업)
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
+        uses: actions/upload-pages-artifact@v3.0.1  # Node 24 compatible
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
-
+        uses: actions/deploy-pages@v4.0.5       # Node 24 compatible

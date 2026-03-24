@@ -29,7 +29,7 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2          # Node 24 compatible
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -44,7 +44,7 @@ jobs:
           git pull --rebase origin "${GITHUB_REF_NAME}" || echo "Pull failed, continuing..."
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0        # Node 24 compatible
         with:
           node-version: '20'
           cache: 'npm'
@@ -76,4 +76,3 @@ jobs:
           else
             echo "No changes to commit - activities.json is up to date"
           fi
-
