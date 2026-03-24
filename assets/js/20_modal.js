@@ -6,6 +6,13 @@
     const modal = ui.$("#" + modalId);
     if (!modal) return;
 
+    // 닫힘 애니메이션 중이면 취소
+    if (modal._closeTid) {
+      window.clearTimeout(modal._closeTid);
+      modal._closeTid = null;
+      modal.classList.remove("is-closing");
+    }
+
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
 
@@ -16,9 +23,15 @@
   function closeModal(modalId) {
     const modal = ui.$("#" + modalId);
     if (!modal) return;
+    if (!modal.classList.contains("is-open")) return;
 
-    modal.classList.remove("is-open");
-    modal.setAttribute("aria-hidden", "true");
+    // ease-in 퇴장: is-closing 추가 → 220ms 후 is-open 제거
+    modal.classList.add("is-closing");
+    modal._closeTid = window.setTimeout(() => {
+      modal.classList.remove("is-open", "is-closing");
+      modal.setAttribute("aria-hidden", "true");
+      modal._closeTid = null;
+    }, 220);
   }
 
   function wireMemberDiffModal() {

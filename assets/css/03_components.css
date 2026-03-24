@@ -57,6 +57,7 @@
   height    : 2px;
   background: var(--accent-ribbon);
   transform : scaleX(0);
+  /* transition은 06_animations.css에서 ease-in-out으로 업그레이드 */
   transition: transform 0.2s ease;
 }
 
@@ -113,6 +114,7 @@
   border-radius   : var(--r, 6px);
   box-shadow      : none;
 
+  /* transition은 06_animations.css에서 확장 정의 */
   transition      : border-color 0.2s;
 }
 

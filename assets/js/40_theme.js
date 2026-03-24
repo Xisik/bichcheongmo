@@ -39,6 +39,13 @@
       const current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
       const next = current === "dark" ? "light" : "dark";
       setTheme(next, true);
+
+      // ease-in-out 스핀 애니메이션
+      btn.classList.remove("is-spinning");
+      // 강제 reflow로 애니메이션 재시작
+      void btn.offsetWidth;
+      btn.classList.add("is-spinning");
+      btn.addEventListener("animationend", () => btn.classList.remove("is-spinning"), { once: true });
     });
   }
 

@@ -60,15 +60,16 @@ jobs:
           # 노션 데이터를 가져와서 JSON 파일로 저장하는 스크립트 실행
           node scripts/sync-notion.js
 
-      - name: Commit and push activities.json
+      - name: Commit and push activities.json and images
         run: |
-          # activities.json만 add (package-lock.json 등 다른 파일 제외)
+          # activities.json과 다운로드된 이미지 파일 add
           git add data/activities.json
-          
+          git add assets/img/activities/ 2>/dev/null || true
+
           # 변경 사항 확인 (내용이 실제로 변경되었는지 확인)
           if ! git diff --staged --quiet; then
             # 변경 사항이 있으면 커밋 및 푸시
-            echo "Changes detected in activities.json, committing..."
+            echo "Changes detected, committing..."
             git commit -m "chore: sync activities from Notion"
             git push origin HEAD:"${GITHUB_REF_NAME}" || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}")
             echo "✓ Successfully synced and pushed changes"
