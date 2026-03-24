@@ -1,9 +1,10 @@
 /* assets/css/06_animations.css
    이징 기반 모션 시스템
    ─────────────────────────────────────────────────────────────
-   EASE-IN-OUT  cubic-bezier(0.4, 0, 0.2, 1)  진입+퇴장 공존, 루프
-   EASE-OUT     cubic-bezier(0, 0, 0.2, 1)    도착·등장 (빠르게 시작 → 정착)
-   EASE-IN      cubic-bezier(0.4, 0, 1, 1)    퇴장·사라짐 (천천히 → 빠르게)
+   EASE-IN-OUT  cubic-bezier(0.4, 0, 0.2, 1)   진입+퇴장 공존, 루프
+   EASE-OUT     cubic-bezier(0, 0, 0.2, 1)     도착·등장 (빠르게 시작 → 정착)
+   EASE-IN      cubic-bezier(0.4, 0, 1, 1)     퇴장·사라짐 (천천히 → 빠르게)
+   OVERSHOOT    cubic-bezier(0.22, 1, 0.36, 1) 스크롤 등장 오버슈트
 */
 
 
@@ -13,13 +14,13 @@
 
 /* 스크롤 등장: 아래서 위로 올라오며 나타남 */
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
 
 /* 페이지 로드 히어로 진입 */
 @keyframes heroReveal {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
 
@@ -33,6 +34,12 @@
 @keyframes navItemReveal {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* 히어로 h1 플로팅 — CSS 변수로 모바일 진폭 조절 */
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(var(--float-y, -8px)); }
 }
 
 
@@ -56,6 +63,12 @@
 @keyframes backdropIn {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+/* 버튼 Ripple */
+@keyframes ripple {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0;   }
 }
 
 
@@ -83,25 +96,61 @@
 
 
 /* =========================
-   히어로 / 페이지 헤더  (ease-in-out)
+   히어로 / 페이지 헤더  (overshoot)
 ========================= */
 
 .hero,
 .page-header {
-  animation: heroReveal 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: heroReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 
 /* =========================
-   스크롤 등장 — scroll-reveal  (ease-in-out)
+   히어로 h1 플로팅  (ease-in-out 루프)
+========================= */
+
+.hero h1 {
+  display     : inline-block; /* transform이 block 요소에도 적용되도록 */
+  animation   : heroFloat 4s ease-in-out infinite;
+  will-change : transform;
+}
+
+/* 모바일: 진폭 절반 */
+@media (max-width: 768px) {
+  .hero h1 {
+    --float-y: -4px;
+  }
+}
+
+
+/* =========================
+   페이지 진입 Fade In  (ease-out)
+   .js 클래스 전제 — JS 없는 환경에서는 숨겨지지 않음
+========================= */
+
+.js main {
+  opacity   : 0;
+  transform : translateY(12px);
+  transition: opacity   0.4s cubic-bezier(0, 0, 0.2, 1),
+              transform 0.4s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.js main.is-page-ready {
+  opacity  : 1;
+  transform: translateY(0);
+}
+
+
+/* =========================
+   스크롤 등장 — scroll-reveal  (overshoot)
    .js 클래스 전제로만 숨김 처리하여 JS 비활성 환경 보호
 ========================= */
 
 .js .scroll-reveal {
   opacity   : 0;
-  transform : translateY(20px);
-  transition: opacity   0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform : translateY(32px);
+  transition: opacity   0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .js .scroll-reveal.is-visible {
@@ -116,18 +165,52 @@
 
 .card {
   transition: border-color 0.2s,
-              transform   0.25s cubic-bezier(0, 0, 0.2, 1),
-              box-shadow  0.25s cubic-bezier(0, 0, 0.2, 1);
+              transform    0.25s cubic-bezier(0, 0, 0.2, 1),
+              box-shadow   0.25s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .card:hover {
-  transform : translateY(-3px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  transform : translateY(-6px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* 모바일(터치): hover 눌러붙음 방지, :active로 대체 */
+@media (hover: none) {
+  .card:hover {
+    transform : none;
+    box-shadow: none;
+  }
+
+  .card:active {
+    transform : translateY(-6px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
 }
 
 
 /* =========================
-   nav-link 언더라인  (ease-in-out 업그레이드)
+   버튼 Ripple 효과
+========================= */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position      : absolute;
+  width         : 100px;
+  height        : 100px;
+  border-radius : 50%;
+  background    : rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  transform     : translate(-50%, -50%) scale(0);
+  animation     : ripple 0.55s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+
+/* =========================
+   nav-link 언더라인  (ease-in-out)
 ========================= */
 
 .nav-link::after {
@@ -204,33 +287,38 @@
 ========================= */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero,
-  .page-header,
-  .js .scroll-reveal,
-  .js .scroll-reveal.is-visible,
-  .nav.is-open .nav-link,
-  .toast.is-show,
-  .toast.is-show.is-hiding,
-  .modal.is-open .modal-backdrop,
-  .modal.is-open .modal-dialog,
-  .modal.is-open.is-closing .modal-backdrop,
-  .modal.is-open.is-closing .modal-dialog,
-  .is-spinning {
-    animation : none;
+  *,
+  *::before,
+  *::after {
+    animation-duration        : 0.01ms !important;
+    animation-iteration-count : 1      !important;
+    transition-duration       : 0.01ms !important;
+  }
+
+  /* 페이지 진입 즉시 표시 */
+  .js main,
+  .js main.is-page-ready {
+    opacity  : 1;
+    transform: none;
     transition: none;
   }
 
+  /* 스크롤 등장 즉시 표시 */
   .js .scroll-reveal {
     opacity  : 1;
     transform: none;
   }
 
-  .card {
-    transition: border-color 0.2s;
-  }
-
-  .card:hover {
+  /* 카드 hover/active 효과 제거 */
+  .card:hover,
+  .card:active {
     transform : none;
     box-shadow: none;
+  }
+
+  /* 플로팅 제거 */
+  .hero h1 {
+    animation  : none;
+    will-change: auto;
   }
 }
