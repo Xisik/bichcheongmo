@@ -1,0 +1,30 @@
+#yt-bg-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#yt-bg-wrapper iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 16:9 비율 유지하며 화면 전체 커버 */
+  width: max(100vw, 177.78vh);
+  height: max(56.25vw, 100vh);
+  border: none;
+  opacity: 0.07;
+  transition: opacity 0.5s ease;
+}
+
+/* 라이트 모드에서 약간 더 진하게 */
+[data-theme="light"] #yt-bg-wrapper iframe {
+  opacity: 0.05;
+}
+
+/* 다크 모드에서 약간 더 진하게 */
+[data-theme="dark"] #yt-bg-wrapper iframe {
+  opacity: 0.09;
+}
