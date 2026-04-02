@@ -1,10 +1,7 @@
 @import url("./05_fonts.css");
 
-html {
-  background-color: var(--main-bg-color);
-}
-
 body {
+  background-color: var(--main-bg-color);
   font-family     : 'Paperozi', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
   letter-spacing  : 0.02rem;
   font-weight     : 400;
