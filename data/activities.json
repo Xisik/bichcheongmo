@@ -1,9 +1,9 @@
 {
   "_metadata": {
-    "lastUpdated": "2026-05-02T20:54:41.212Z",
+    "lastUpdated": "2026-05-02T21:28:31.572Z",
     "syncStatus": "success",
     "errorMessage": null,
-    "activitiesCount": 14,
+    "activitiesCount": 13,
     "version": "1.0"
   },
   "activities": [
@@ -149,19 +149,6 @@
       "id": "31e324da-d966-809a-990a-e2b5ef5e0e4c",
       "created_time": "2026-03-09T11:20:00.000Z",
       "last_edited_time": "2026-03-09T11:21:00.000Z"
-    },
-    {
-      "title": "빛청모 임시총회 및 2026 정기총회 개최 최종 안내",
-      "date": "2026-03-10T00:00:00.000Z",
-      "summary": "빛청모 임시총회 및 2026 정기총회 개최 최종 안내",
-      "body": "빛청모의 제 7회 임시총회 겸 2026년 정기총회 오프라인 회의 장소가 확정되어 최종 공지 드립니다.\n\n홍보물 참고 부탁드리며 회원 여러분께서는 아래 링크를 통해 참석 방식과 여부를 알려주시면 감사하겠습니다",
-      "slug": "2026",
-      "published": true,
-      "category": "총회",
-      "image": "./assets/img/activities/31f324da-d966-80ad-8db1-dedcd464263e.png",
-      "id": "31f324da-d966-80ad-8db1-dedcd464263e",
-      "created_time": "2026-03-10T06:46:00.000Z",
-      "last_edited_time": "2026-03-10T07:16:00.000Z"
     },
     {
       "title": "[지역지부성명] <행정은 통합, 학생인권은 분리? 전남 / 광주교육청은 학생인권조례를 뒤로 미루지 마라!>",
