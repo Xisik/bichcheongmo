@@ -1,9 +1,9 @@
 {
   "_metadata": {
-    "lastUpdated": "2026-05-09T10:34:45.343Z",
+    "lastUpdated": "2026-05-09T11:28:06.799Z",
     "syncStatus": "success",
     "errorMessage": null,
-    "activitiesCount": 14,
+    "activitiesCount": 13,
     "version": "1.0"
   },
   "activities": [
@@ -123,19 +123,6 @@
       "id": "31b324da-d966-80dd-920e-ffd820192dc7",
       "created_time": "2026-03-06T00:06:00.000Z",
       "last_edited_time": "2026-03-06T00:07:00.000Z"
-    },
-    {
-      "title": "빛청모 제 7회 임시총회 겸 2026 정기총회 개회 안내 (임시본)",
-      "date": "2026-03-06T00:00:00.000Z",
-      "summary": "빛청모 제 7회 임시총회 겸 2026 정기총회 개회 안내 (임시본)",
-      "body": "빛청모의 제 7회 임시총회 겸 2026년 정기총회의 개회를 안내드립니다. 이번 행사는 특히 빛청모 총회 최초로 오프라인으로 병행하는 만큼 적극적인 참여를 위해 본회 약 1개월 전인 오늘 공지드림을 양해 부탁드립니다. 또한 오프라인 장소의 대관을 현재 물색중인 상태로 장소가 확정되면 다시 한번 공지드리겠습니다.",
-      "slug": "7-2026",
-      "published": true,
-      "category": "총회",
-      "image": "./assets/img/activities/31c324da-d966-809c-93f0-d29d07a07d29.png",
-      "id": "31c324da-d966-809c-93f0-d29d07a07d29",
-      "created_time": "2026-03-07T02:52:00.000Z",
-      "last_edited_time": "2026-03-07T02:57:00.000Z"
     },
     {
       "title": "빛청모 월간지(소식지) 웨이브 팀 제 1대 편집부 및 기자단 모집 공고",
