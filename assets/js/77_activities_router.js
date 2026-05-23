@@ -20,7 +20,7 @@
   function getActivitySlugFromUrl(url) {
     const targetUrl = url || window.location.href;
     try {
-      const urlObj = new URL(targetUrl);
+      const urlObj = new URL(targetUrl, window.location.href);
       
       // 쿼리 파라미터 방식: ?activity=slug
       const slug = urlObj.searchParams.get('activity');

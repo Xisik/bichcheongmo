@@ -20,7 +20,7 @@
   function getStatementSlugFromUrl(url) {
     const targetUrl = url || window.location.href;
     try {
-      const urlObj = new URL(targetUrl);
+      const urlObj = new URL(targetUrl, window.location.href);
       
       // 쿼리 파라미터 방식: ?statement=slug
       let slug = urlObj.searchParams.get('statement');

@@ -1,6 +1,11 @@
 (function () {
   const KEY = "theme"; // "light" | "dark"
   const root = document.documentElement;
+  const ui = window.__ui || {};
+
+  function t(text) {
+    return ui.i18n && ui.i18n.t ? ui.i18n.t(text) : text;
+  }
 
   function getPreferredTheme() {
     return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -20,6 +25,8 @@
     if (btn) {
       const isDark = theme === "dark";
       btn.setAttribute("aria-pressed", isDark ? "true" : "false");
+      btn.setAttribute("aria-label", isDark ? t("라이트 모드로 전환") : t("다크 모드로 전환"));
+      btn.setAttribute("title", isDark ? t("라이트 모드로 전환") : t("다크 모드로 전환"));
       // 현재 상태를 토글의 "다음 동작"으로 표기
       btn.textContent = isDark ? "\udb80\udce0" : "\udb80\udcdb";
     }
@@ -46,6 +53,11 @@
       void btn.offsetWidth;
       btn.classList.add("is-spinning");
       btn.addEventListener("animationend", () => btn.classList.remove("is-spinning"), { once: true });
+    });
+
+    window.addEventListener("languagechange", () => {
+      const current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      setTheme(current, false);
     });
   }
 

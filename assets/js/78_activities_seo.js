@@ -2,6 +2,16 @@
   'use strict';
 
   const ui = window.__ui || {};
+
+  function t(text) {
+    return ui.i18n && ui.i18n.t ? ui.i18n.t(text) : text;
+  }
+
+  function getLocale() {
+    return ui.i18n && ui.i18n.getLanguage && ui.i18n.getLanguage() === 'en'
+      ? 'en_US'
+      : 'ko_KR';
+  }
   
   /**
    * 활동 페이지 SEO 최적화 모듈
@@ -83,8 +93,8 @@
    * 활동 목록 페이지 SEO 설정
    */
   function setListPageSEO() {
-    const title = '빛청모 | 활동공유';
-    const description = '빛청모의 다양한 활동과 소식을 공유하는 공간입니다.';
+    const title = t('빛청모 | 활동공유');
+    const description = t('빛청모의 다양한 활동과 소식을 공유하는 공간입니다.');
     const url = window.location.origin + window.location.pathname;
     const image = window.location.origin + '/assets/img/logo.jpg';
 
@@ -99,7 +109,7 @@
     setMetaTag(null, description, 'og:description');
     setMetaTag(null, url, 'og:url');
     setMetaTag(null, image, 'og:image');
-    setMetaTag(null, 'ko_KR', 'og:locale');
+    setMetaTag(null, getLocale(), 'og:locale');
 
     // Twitter Card 태그
     setMetaTag('twitter:card', 'summary');
@@ -111,7 +121,7 @@
     setStructuredData({
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      'name': '빛청모',
+      'name': t('빛청모'),
       'url': window.location.origin,
       'logo': image,
       'description': description
@@ -129,9 +139,9 @@
     }
 
     const { title, summary, body, slug, date, image } = activity;
-    const siteTitle = '빛청모 | 활동공유';
+    const siteTitle = t('빛청모 | 활동공유');
     const pageTitle = `${title} | ${siteTitle}`;
-    const description = summary || body.substring(0, 160) || '빛청모의 활동을 확인하세요.';
+    const description = summary || body.substring(0, 160) || t('빛청모의 활동을 확인하세요.');
     const url = window.location.origin + window.location.pathname + `?activity=${encodeURIComponent(slug)}`;
     const ogImage = image || window.location.origin + '/assets/img/logo.jpg';
     const publishedDate = date instanceof Date ? date.toISOString() : new Date().toISOString();
@@ -149,7 +159,7 @@
     setMetaTag(null, description, 'og:description');
     setMetaTag(null, url, 'og:url');
     setMetaTag(null, ogImage, 'og:image');
-    setMetaTag(null, 'ko_KR', 'og:locale');
+    setMetaTag(null, getLocale(), 'og:locale');
     setMetaTag(null, publishedDate, 'article:published_time');
 
     // Twitter Card 태그
@@ -170,11 +180,11 @@
       'datePublished': publishedDate,
       'author': {
         '@type': 'Organization',
-        'name': '빛청모'
+        'name': t('빛청모')
       },
       'publisher': {
         '@type': 'Organization',
-        'name': '빛청모',
+        'name': t('빛청모'),
         'logo': {
           '@type': 'ImageObject',
           'url': window.location.origin + '/assets/img/logo.jpg'
