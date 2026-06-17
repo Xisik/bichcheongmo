@@ -155,10 +155,16 @@
 
   .nav-link::after{ display: none; }
 
-  .nav-link:hover,
   .nav-link:active{
     background-color: var(--bg-2, var(--surface-strong));
     border-color    : var(--bd-2, var(--text-shadow));
+  }
+
+  @media (hover: hover) {
+    .nav-link:hover{
+      background-color: var(--bg-2, var(--surface-strong));
+      border-color    : var(--bd-2, var(--text-shadow));
+    }
   }
 
   .nav-link.is-active{

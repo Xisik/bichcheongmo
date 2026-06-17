@@ -304,6 +304,26 @@ button:not(:disabled):hover::after,
   width: 100%;
 }
 
+@media (hover: none) {
+  button:not(:disabled):hover,
+  .button:hover{
+    background-color: var(--bg-2, var(--text-secondary));
+    color           : var(--text-primary);
+    border-color    : var(--bd-1, var(--text-shadow));
+  }
+
+  button:not(:disabled):hover::before,
+  .button:hover::before{
+    top   : 0;
+    bottom: 0;
+  }
+
+  button:not(:disabled):hover::after,
+  .button:hover::after{
+    width: 0;
+  }
+}
+
 /* Active */
 button:not(:disabled):active,
 .button:active{
