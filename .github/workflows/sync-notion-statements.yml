@@ -8,13 +8,8 @@ on:
     - cron: '*/5 * * * *'   # 매 5분마다
   # 수동 실행
   workflow_dispatch:
-  # 외부에서 트리거 가능 (repository_dispatch)
-  # 예: curl -X POST -H "Authorization: token YOUR_TOKEN" \
-  #     https://api.github.com/repos/OWNER/REPO/dispatches \
-  #     -d '{"event_type":"sync-notion-statements"}'
-  repository_dispatch:
-    types: [sync-notion-statements]
-  # push 트리거 제거: Notion sync는 schedule/repository_dispatch/workflow_dispatch만 사용
+  # 보안: repository_dispatch 트리거 제거 (외부 API 트리거 차단)
+  # push 트리거 제거: Notion sync는 schedule/workflow_dispatch만 사용
   # JSON 업데이트 후 push는 [skip ci] 없이 하여 pages-deploy.yml이 자동 배포하도록
 
 # Node 24 강제 적용 (Node 20 deprecated 경고 해소)

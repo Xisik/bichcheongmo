@@ -3,6 +3,8 @@
 
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self' https:; object-src 'none'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
   <meta name="description" content="빛청모의 지역지부 소개 페이지입니다. 전국 각 지역의 지부 정보를 확인하실 수 있습니다." />
   <meta property="og:type" content="website" />
@@ -77,7 +79,7 @@
 
       <div class="contact-list">
         <div class="contact-item branch-item">
-          <div class="branch-header" style="cursor: pointer;" data-toggle="branchContact1" aria-expanded="false"
+          <div class="branch-header" data-toggle="branchContact1" aria-expanded="false"
             aria-controls="branchContact1" role="button" tabindex="0">
             <div class="contact-name">빛청모 부산울산경남지부</div>
             <div class="contact-phone">
@@ -97,7 +99,7 @@
         </div>
 
         <div class="contact-item branch-item">
-          <div class="branch-header" style="cursor: pointer;" data-toggle="branchContact2" aria-expanded="false"
+          <div class="branch-header" data-toggle="branchContact2" aria-expanded="false"
             aria-controls="branchContact2" role="button" tabindex="0">
             <div class="contact-name">빛청모 전남광주통합특별시지부</div>
             <div class="contact-phone">
@@ -121,7 +123,7 @@
         </div>
 
         <div class="contact-item branch-item">
-          <div class="branch-header" style="cursor: pointer;" data-toggle="branchContact3" aria-expanded="false"
+          <div class="branch-header" data-toggle="branchContact3" aria-expanded="false"
             aria-controls="branchContact3" role="button" tabindex="0">
             <div class="contact-name">빛청모 서울경기지부</div>
             <div class="contact-phone">
@@ -141,7 +143,7 @@
         </div>
 
         <div class="contact-item branch-item">
-          <div class="branch-header" style="cursor: pointer;" data-toggle="branchContact6" aria-expanded="false"
+          <div class="branch-header" data-toggle="branchContact6" aria-expanded="false"
             aria-controls="branchContact6" role="button" tabindex="0">
             <div class="contact-name">빛청모 충청지부</div>
             <div class="contact-phone">
@@ -171,6 +173,7 @@
         <p>사업자번호 231-82-77851</p>
         <p>Shining Us, LGBTQ Youth</p>
         <p>본 단체는 관할 세무서에 등록된 임의단체로써 고유사업 외의 수익 사업을 영위하지 않습니다</p>
+        <p><a href="./LICENSE">GPL-3.0-or-later</a> · <a href="./THIRD_PARTY_NOTICES.md">제3자 라이선스 고지</a></p>
       </div>
       <div>© 빛청모</div>
     </div>
@@ -179,6 +182,7 @@
   <script src="./assets/js/00_dom.js"></script>
   <script src="./assets/js/05_scroll_reveal.js" defer></script>
   <script src="./assets/js/30_disclosure.js"></script>
+  <script src="./assets/js/35_region_links.js"></script>
   <script src="./assets/js/10_toast.js"></script>
   <script src="./assets/js/20_modal.js"></script>
   <script src="./assets/js/99_main.js"></script>
@@ -186,12 +190,6 @@
   <script src="./assets/js/40_theme.js"></script>
   <script src="./assets/js/50_mobile_menu.js"></script>
   <script src="./assets/js/06_motion.js"></script>
-  <script>
-    // 지부 연락처 링크 클릭 시 토글 이벤트 전파 방지
-    document.querySelectorAll('.contact-phone .link').forEach(function (el) {
-      el.addEventListener('click', function (e) { e.stopPropagation(); });
-    });
-  </script>
 </body>
 
 </html>

@@ -85,9 +85,9 @@
 
 6. **04_modal.css** - 모달 스타일
 
-7. **05_fonts.css** - 폰트 정의
+7. **05_toast.css** - 토스트 알림 스타일
 
-8. **05_toast.css** - 토스트 알림 스타일
+8. **06_animations.css** - 애니메이션 스타일
 
 ### JavaScript Architecture
 

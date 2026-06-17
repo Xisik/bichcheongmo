@@ -68,7 +68,7 @@ python -m http.server 8000
 
 ## 배포
 
-`main` 브랜치에 push되면 GitHub Actions의 Pages 배포 워크플로가 저장소 루트를 GitHub Pages 아티팩트로 업로드합니다.
+`main` 브랜치에 push되면 GitHub Actions의 Pages 배포 워크플로가 `scripts/prepare-pages.js`를 실행하여 `_site/` 배포 산출물을 만들고, 해당 디렉터리만 GitHub Pages 아티팩트로 업로드합니다.
 
 커스텀 도메인은 `CNAME` 파일에서 관리합니다.
 
@@ -80,4 +80,6 @@ python -m http.server 8000
 
 ## 라이선스
 
-이 저장소는 `GPL-3.0-or-later` 라이선스를 따릅니다.
+이 저장소의 소스 코드는 GNU General Public License v3.0 또는 이후 버전(`GPL-3.0-or-later`)에 따라 배포됩니다. 자세한 조건과 보증 부인은 [`LICENSE`](./LICENSE)를 확인하세요.
+
+이 프로젝트의 CSS 디자인 및 일부 구현은 FlySkyPie의 `yorha.css` 작업/fork를 참고 및 변형했으며, 원 프로젝트인 YoRHa(`metakirby5/yorha`)는 MIT License로 배포됩니다. 해당 원 저작권 및 MIT 라이선스 고지는 [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)에 보존되어 있습니다.

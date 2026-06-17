@@ -275,12 +275,13 @@ function transformNotionPage(page, blocks = []) {
     'Published', 'published', 
     'Public', 'public'
   ]);
-  let published = true;
+  // 보안: opt-in 공개 정책. 공개 여부가 명시되지 않으면 비공개로 처리한다.
+  let published = false;
   if (publishedProperty) {
     if (publishedProperty.type === 'checkbox') {
-      published = publishedProperty.checkbox !== false;
+      published = publishedProperty.checkbox === true;
     } else if (publishedProperty.type === 'status') {
-      // Status가 "공개" 또는 "Published"면 true, "비공개"면 false
+      // Status가 "공개" 또는 "Published"면 true, 그 외에는 비공개
       const statusName = publishedProperty.status?.name || '';
       const publicValues = ['공개', 'Published', 'published', 'Public', 'public'];
       const privateValues = ['비공개', 'Private', 'private', 'Unpublished', 'unpublished'];
@@ -290,12 +291,12 @@ function transformNotionPage(page, blocks = []) {
       } else if (privateValues.includes(statusName)) {
         published = false;
       } else {
-        // 알 수 없는 값이면 기본값 true
-        console.warn(`Unknown status value for published: "${statusName}", defaulting to true`);
-        published = true;
+        // 알 수 없는 값이면 안전하게 비공개 처리
+        console.warn(`Unknown status value for published: "${statusName}", defaulting to false`);
+        published = false;
       }
     } else {
-      published = true; // 기본값
+      published = false; // 명시되지 않은 타입은 비공개
     }
   }
 

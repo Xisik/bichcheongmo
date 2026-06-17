@@ -406,6 +406,11 @@ button.btn {
   margin: 1.5rem 0;
   text-align: center;
 }
+
+.statement-detail-image{
+  width: 512px;
+}
+
 .statement-link{
   text-decoration: none;
   color: inherit;
@@ -488,6 +493,10 @@ button.btn {
 .activity-image{
   margin: 1.5rem 0;
   text-align: center;
+}
+
+.activity-detail-image{
+  width: 512px;
 }
 
 .activity-detail-body{
@@ -619,6 +628,7 @@ button.btn {
   gap            : 0.75rem;
   width          : 100%;
   min-width      : 0;
+  cursor         : pointer;
 }
 
 .branch-header[role="button"]:focus{

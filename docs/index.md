@@ -37,7 +37,8 @@
 ## Existing Documentation
 
 - [README.md](../README.md) - 프로젝트 설명
-- [LICENSE](../LICENSE) - MIT 라이선스
+- [LICENSE](../LICENSE) - GNU General Public License v3.0 or later (`GPL-3.0-or-later`)
+- [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) - 제3자 저작권 및 라이선스 고지
 
 ## Getting Started
 

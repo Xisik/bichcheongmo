@@ -152,7 +152,8 @@
         : (rawData.id && typeof rawData.id === 'string' ? rawData.id : generateSlug(title));
       
       // Story 2.4: published 필드 안전하게 처리
-      let published = true; // 기본값: 공개
+      // 보안: opt-in 공개 정책. 공개 여부가 없으면 비공개로 처리한다.
+      let published = false; // 기본값: 비공개
       if (rawData.published !== undefined) {
         if (typeof rawData.published === 'boolean') {
           published = rawData.published;

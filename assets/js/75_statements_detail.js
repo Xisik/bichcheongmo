@@ -41,8 +41,13 @@
       return `__CODE_BLOCK_${id}__`;
     });
 
-    // 인라인 코드 처리 (`로 감싼 부분) — 내용 이스케이프 필수
-    html = html.replace(/`([^`]+)`/g, (_, code) => `<code>${escapeHtml(code)}</code>`);
+    // 인라인 코드 처리 (`로 감싼 부분) - 일반 텍스트 이스케이프 전에 placeholder로 보호
+    const inlineCodes = [];
+    html = html.replace(/`([^`]+)`/g, (_, code) => {
+      const id = `inline-code-${inlineCodes.length}`;
+      inlineCodes.push({ id, code: escapeHtml(code) });
+      return `__INLINE_CODE_${id}__`;
+    });
 
     // 줄 단위로 처리
     const lines = html.split('\n');
@@ -87,12 +92,12 @@
         continue;
       }
 
-      // 일반 텍스트
+      // 일반 텍스트 - 문단 생성 전 선제 이스케이프
       if (inList) {
         processedLines.push('</ul>');
         inList = false;
       }
-      processedLines.push(line);
+      processedLines.push(escapeHtml(line));
     }
 
     // 리스트가 끝나지 않은 경우 닫기
@@ -140,6 +145,11 @@
       }
       return `<p>${para}</p>`;
     }).join('');
+
+    // 인라인 코드 복원
+    inlineCodes.forEach(({ id, code }) => {
+      html = html.replace(`__INLINE_CODE_${id}__`, `<code>${code}</code>`);
+    });
 
     // 코드 블록 복원
     codeBlocks.forEach(({ id, code }) => {
@@ -242,9 +252,34 @@
       // HTML 콘텐츠: 위험 태그/속성 제거 후 반환
       return sanitizeHtml(body);
     } else {
-      // 마크다운 파싱
-      return parseMarkdown(body);
+      // 마크다운 파싱 후에도 새니타이저를 거쳐 이중 방어 (XSS 차단)
+      return sanitizeHtml(parseMarkdown(body));
     }
+  }
+
+  /**
+   * 이미지 URL 안전성 검사
+   * 스킴이 있는 절대 URL은 http/https만 허용하고, 상대 경로는 허용한다.
+   * javascript:, data: 등 위험 스킴 차단
+   * @param {string} url - 검사할 URL
+   * @returns {boolean} 안전 여부
+   */
+  function isSafeImageUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    const u = url.trim();
+    if (/^[a-z][a-z0-9+.-]*:/i.test(u)) {
+      return /^https?:/i.test(u);
+    }
+    return true;
+  }
+
+  /**
+   * 슬러그를 유효한 HTML id 토큰으로 정규화
+   * @param {string} slug - 원본 슬러그
+   * @returns {string} 정규화된 id
+   */
+  function toSafeId(slug) {
+    return String(slug == null ? '' : slug).replace(/[^a-zA-Z0-9_-]/g, '-');
   }
 
   /**
@@ -260,14 +295,16 @@
     const { title, date, summary, body, slug, image, category } = statement;
     const formattedDate = formatDateKorean(date);
     const renderedBody = renderBody(body);
+    const safeSlug = escapeHtml(slug);
+    const idSlug = toSafeId(slug);
 
     // Story 3.3: 스크린 리더 접근성 - 이미지 alt 텍스트 개선
     let imageHtml = '';
-    if (image) {
+    if (image && isSafeImageUrl(image)) {
       const imageAlt = `${escapeHtml(title)} 성명 이미지`;
       imageHtml = `
         <div class="statement-image" role="img" aria-label="${imageAlt}">
-          <img style="width:512px" src="${escapeHtml(image)}" alt="${imageAlt}" loading="lazy" onerror="this.closest('.statement-image').style.display='none'">
+          <img class="statement-detail-image" src="${escapeHtml(image)}" alt="${imageAlt}" loading="lazy">
         </div>
       `;
     }
@@ -279,7 +316,7 @@
 
     // Story 3.3: 스크린 리더 접근성 - 상세 페이지 ARIA 속성
     return `
-      <article class="card statement-detail" data-statement-slug="${slug}" aria-labelledby="detail-title-${slug}">
+      <article class="card statement-detail" data-statement-slug="${safeSlug}" aria-labelledby="detail-title-${idSlug}">
         <header class="statement-detail-header">
           <div class="statement-detail-meta" aria-label="성명 메타 정보">
             ${categoryHtml ? `<span class="statement-category" aria-label="카테고리: ${escapeHtml(category)}">${escapeHtml(category)}</span>` : ''}
@@ -287,7 +324,7 @@
               ${formattedDate}
             </time>
           </div>
-          <h1 class="statement-detail-title" id="detail-title-${slug}">${escapeHtml(title)}</h1>
+          <h1 class="statement-detail-title" id="detail-title-${idSlug}">${escapeHtml(title)}</h1>
           ${summary ? `<p class="statement-detail-summary" aria-label="성명 요약">${escapeHtml(summary)}</p>` : ''}
         </header>
         ${imageHtml}
@@ -345,6 +382,16 @@
     }
 
     containerEl.innerHTML = createStatementDetail(statement);
+
+    // 인라인 onerror 대신 이벤트 리스너로 이미지 로드 실패 처리 (CSP 호환)
+    const detailImg = containerEl.querySelector('.statement-detail-image');
+    if (detailImg) {
+      detailImg.addEventListener('error', function () {
+        const wrap = detailImg.closest('.statement-image');
+        if (wrap) wrap.style.display = 'none';
+      });
+    }
+
     return true;
   }
 

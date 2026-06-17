@@ -32,7 +32,7 @@ async function debugNotionDatabase() {
   try {
     console.log('🔍 노션 데이터베이스 디버깅 시작...\n');
     console.log(`📋 데이터베이스 ID: ${NOTION_DATABASE_ID.substring(0, 8)}...`);
-    console.log(`🔑 API 키: ${NOTION_API_KEY.substring(0, 8)}...\n`);
+    console.log('🔑 API 키: (설정됨)\n');
 
     // 노션 클라이언트 생성
     const client = new NotionClient(NOTION_API_KEY);
@@ -148,14 +148,14 @@ async function debugNotionDatabase() {
           console.log(`    📌 공개 여부: "${publishedProp}" = "${pubValue.status?.name || '없음'}"`);
         }
       } else {
-        console.log(`    📌 공개 여부 필드 없음 (기본값: 공개)`);
+        console.log(`    📌 공개 여부 필드 없음 (기본값: 비공개)`);
       }
     });
 
     console.log('\n\n💡 문제 해결 팁:');
     console.log('   1. 필수 필드 확인: 모든 페이지에 "제목"과 "날짜" 필드가 있어야 합니다.');
     console.log('   2. 필드명 확인: 필드명은 대소문자와 공백을 무시하고 인식됩니다.');
-    console.log('   3. 공개 여부: "공개 여부" 필드가 없으면 기본적으로 공개됩니다.');
+    console.log('   3. 공개 여부: "공개 여부" 필드가 없으면 기본적으로 비공개됩니다.');
     console.log('   4. GitHub Actions: 이 스크립트가 성공하면 GitHub Actions도 성공할 것입니다.\n');
 
   } catch (error) {

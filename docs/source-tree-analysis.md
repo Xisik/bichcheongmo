@@ -12,7 +12,8 @@ bichcheongmo/
 ├── activities.html          # 활동 공유 페이지
 ├── contact.html             # 문의하기 페이지
 ├── README.md                # 프로젝트 설명
-├── LICENSE                  # MIT 라이선스
+├── LICENSE                  # GNU GPL v3.0-or-later 라이선스
+├── THIRD_PARTY_NOTICES.md   # 제3자 저작권 및 라이선스 고지
 ├── CNAME                    # GitHub Pages 커스텀 도메인 설정
 ├── favicon.ico              # 파비콘
 │
@@ -24,8 +25,8 @@ bichcheongmo/
 │   │   ├── 02_layout.css           # 레이아웃 스타일
 │   │   ├── 03_components.css       # 컴포넌트 스타일
 │   │   ├── 04_modal.css            # 모달 스타일
-│   │   ├── 05_fonts.css            # 폰트 정의
-│   │   └── 05_toast.css            # 토스트 알림 스타일
+│   │   ├── 05_toast.css            # 토스트 알림 스타일
+│   │   └── 06_animations.css       # 애니메이션 스타일
 │   │
 │   ├── js/                  # JavaScript 모듈
 │   │   ├── 00_dom.js               # DOM 유틸리티 함수
@@ -128,10 +129,10 @@ bichcheongmo/
 
 ## Build & Distribution
 
-**빌드 프로세스 없음**
-- 소스 파일이 그대로 배포됨
+**정적 배포 산출물 준비**
+- `scripts/prepare-pages.js`가 `_site/` 배포 산출물을 만들고, 참조된 정적 자산과 공개 JSON만 배포됨
 - GitHub Pages에서 직접 서빙
-- 빌드 도구나 번들러 불필요
+- 번들러는 사용하지 않음
 
 ## Excluded Directories
 

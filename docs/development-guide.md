@@ -89,8 +89,8 @@ bichcheongmo/
 <link rel="stylesheet" href="./assets/css/02_layout.css" />
 <link rel="stylesheet" href="./assets/css/03_components.css" />
 <link rel="stylesheet" href="./assets/css/04_modal.css" />
-<link rel="stylesheet" href="./assets/css/05_fonts.css" />
 <link rel="stylesheet" href="./assets/css/05_toast.css" />
+<link rel="stylesheet" href="./assets/css/06_animations.css" />
 ```
 
 **JavaScript 로딩 순서 (중요):**
@@ -113,15 +113,15 @@ bichcheongmo/
 
 **자동화된 테스트 없음:**
 - 테스트 프레임워크 없음
-- CI/CD 파이프라인 없음
+- GitHub Actions는 Pages 배포와 Notion 동기화에 사용됨
 
 ## Build Process
 
-**빌드 프로세스 없음**
+**배포 산출물 준비**
 
-- 소스 파일이 그대로 배포됨
-- 빌드 단계 없음
-- 번들링/압축 없음
+- 정적 사이트이므로 번들링/압축은 없음
+- 배포 전 `node scripts/prepare-pages.js`가 `_site/` 디렉터리를 생성함
+- `_site/`에는 HTML, CNAME, 공개 JSON, 실제 참조되는 정적 자산만 포함됨
 
 ## Common Development Tasks
 
@@ -199,7 +199,8 @@ bichcheongmo/
 ## Resources
 
 - **참고:** FlySkyPie의 yorha.css 참고
-- **라이선스:** MIT License
+- **프로젝트 라이선스:** GNU General Public License v3.0 or later (`GPL-3.0-or-later`)
+- **제3자 고지:** 이 프로젝트의 CSS 디자인 및 일부 구현은 FlySkyPie의 `yorha.css` 작업/fork를 참고 및 변형했습니다. 원 프로젝트 YoRHa(`metakirby5/yorha`)의 MIT 라이선스 고지는 [`../THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md)에 보존되어 있습니다.
 - **저장소:** GitHub
 
 

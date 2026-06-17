@@ -10,8 +10,8 @@
 | **Markup** | HTML5 | 5.0 | 표준 HTML5, 한국어 지원 (lang="ko") |
 | **Styling** | CSS3 | 3.0 | CSS 변수 기반 디자인 시스템, 다크 모드 지원 |
 | **Scripting** | Vanilla JavaScript | ES5/ES6 | 프레임워크 없는 순수 JavaScript |
-| **Build Tool** | None | - | 정적 사이트, 빌드 도구 불필요 |
-| **Package Manager** | None | - | 의존성 없음 |
+| **Build Tool** | Node.js script | - | `scripts/prepare-pages.js`로 GitHub Pages 배포 산출물 준비 |
+| **Package Manager** | npm | - | Notion 동기화 스크립트 의존성 관리 |
 | **Deployment** | GitHub Pages | - | CNAME 파일로 커스텀 도메인 설정 |
 
 ## Architecture Pattern
@@ -34,8 +34,8 @@
   - `02_layout.css` - 레이아웃
   - `03_components.css` - 컴포넌트
   - `04_modal.css` - 모달
-  - `05_fonts.css` - 폰트
   - `05_toast.css` - 토스트 알림
+  - `06_animations.css` - 애니메이션
 
 ## JavaScript Architecture
 

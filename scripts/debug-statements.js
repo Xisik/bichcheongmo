@@ -24,7 +24,7 @@ async function debugDatabase() {
   try {
     console.log('=== 노션 성명서 데이터베이스 디버깅 ===\n');
     console.log(`Database ID: ${NOTION_STATEMENTS_DATABASE_ID}`);
-    console.log(`API Key: ${NOTION_API_KEY.substring(0, 10)}...\n`);
+    console.log('API Key: (설정됨)\n');
     
     const client = new NotionClient(NOTION_API_KEY);
     

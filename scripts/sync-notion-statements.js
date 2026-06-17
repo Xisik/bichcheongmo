@@ -15,11 +15,31 @@ const http = require('http');
 const NotionClient = require('./notion-client');
 const { transformNotionPage } = require('./notion-transformer');
 
+const GENERATED_IMAGE_RE = /^[0-9a-f-]{32,36}\.(avif|gif|jpe?g|png|webp)$/i;
+
 /**
  * Notion S3 임시 URL에서 이미지를 다운로드하고 정적 파일로 저장
  */
-async function downloadAndSaveImage(imageUrl, statementId) {
+// 보안: 이미지 다운로드를 허용된 호스트로 제한 (SSRF 완화)
+const ALLOWED_IMAGE_HOSTS = ['amazonaws.com', 'notion.so', 'notion-static.com', 'notion.com'];
+
+function isAllowedImageHost(urlStr) {
+  try {
+    const host = new URL(urlStr).hostname.toLowerCase();
+    return ALLOWED_IMAGE_HOSTS.some((h) => host === h || host.endsWith('.' + h));
+  } catch {
+    return false;
+  }
+}
+
+async function downloadAndSaveImage(imageUrl, statementId, redirectsLeft = 3) {
   if (!imageUrl) return null;
+
+  // 보안: 허용되지 않은 호스트는 다운로드하지 않는다 (SSRF 방지)
+  if (!isAllowedImageHost(imageUrl)) {
+    console.warn(`  WARNING: Image host not allowed, skipping for ${statementId}: ${imageUrl}`);
+    return null;
+  }
 
   const imagesDir = path.join(__dirname, '..', 'assets', 'img', 'statements');
   if (!fs.existsSync(imagesDir)) {
@@ -35,13 +55,19 @@ async function downloadAndSaveImage(imageUrl, statementId) {
 
   const filename = `${statementId}${ext}`;
   const localPath = path.join(imagesDir, filename);
-  const publicPath = `/assets/img/statements/${filename}`;
+  const publicPath = `./assets/img/statements/${filename}`;
 
   return new Promise((resolve) => {
     const protocol = imageUrl.startsWith('https') ? https : http;
     const request = protocol.get(imageUrl, (res) => {
       if (res.statusCode === 301 || res.statusCode === 302) {
-        downloadAndSaveImage(res.headers.location, statementId).then(resolve);
+        // 리다이렉트 처리 (최대 3회 제한 + 호스트 재검증은 재귀 호출 내부에서 수행)
+        if (redirectsLeft <= 0) {
+          console.warn(`  WARNING: Too many redirects for statement ${statementId}`);
+          resolve(null);
+          return;
+        }
+        downloadAndSaveImage(res.headers.location, statementId, redirectsLeft - 1).then(resolve);
         return;
       }
       if (res.statusCode !== 200) {
@@ -72,6 +98,38 @@ async function downloadAndSaveImage(imageUrl, statementId) {
       resolve(null);
     });
   });
+}
+
+/**
+ * 현재 공개 JSON에서 참조하지 않는 자동 다운로드 이미지를 삭제한다.
+ * API 실패 시에도 오래된 파일 URL이 계속 남는 일을 줄이기 위한 fail-closed 정리다.
+ *
+ * @param {Array<Object>} statements - 저장될 공개 성명 배열
+ */
+function pruneUnreferencedStatementImages(statements) {
+  const imagesDir = path.join(__dirname, '..', 'assets', 'img', 'statements');
+  if (!fs.existsSync(imagesDir)) return;
+
+  const referenced = new Set();
+  for (const statement of Array.isArray(statements) ? statements : []) {
+    if (!statement || typeof statement.image !== 'string') continue;
+    try {
+      const imageUrl = new URL(statement.image, 'https://www.bichcheongmo.org/');
+      if (imageUrl.pathname.includes('/assets/img/statements/')) {
+        referenced.add(path.basename(imageUrl.pathname));
+      }
+    } catch {
+      // URL로 해석되지 않는 값은 정리 기준에 포함하지 않는다.
+    }
+  }
+
+  for (const entry of fs.readdirSync(imagesDir, { withFileTypes: true })) {
+    if (!entry.isFile() || !GENERATED_IMAGE_RE.test(entry.name) || referenced.has(entry.name)) {
+      continue;
+    }
+    fs.unlinkSync(path.join(imagesDir, entry.name));
+    console.log(`  - Removed unreferenced statement image: ${entry.name}`);
+  }
 }
 
 // 환경 변수 확인 (성명서 전용 API 키 우선, 없으면 공용 NOTION_API_KEY 사용)
@@ -158,7 +216,10 @@ async function fetchNotionData() {
         // 페이지를 성명 데이터로 변환
         const statement = transformNotionPage(page, blocks);
         
-        if (statement) {
+        if (statement && !statement.published) {
+          // 보안: 비공개 항목은 JSON에 저장하지 않는다 (정적 파일 직접 노출 방지)
+          console.log(`  ↩ Skipping unpublished statement: ${statement.title}`);
+        } else if (statement) {
           // Notion S3 임시 URL이면 다운로드하여 정적 파일로 교체
           if (statement.image && statement.image.includes('prod-files-secure.s3')) {
             console.log(`  Downloading image for: ${statement.title}`);
@@ -206,24 +267,9 @@ async function fetchNotionData() {
     console.error('ERROR: Failed to fetch Notion data:', error.message);
     console.error('  Error details:', JSON.stringify(errorDetails, null, 2));
     
-    // 폴백: 기존 데이터 파일이 있으면 사용
-    const dataPath = path.join(__dirname, '..', 'data', 'statements.json');
-    if (fs.existsSync(dataPath)) {
-      try {
-        const existingFile = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        // 새로운 형식 (메타데이터 포함) 또는 기존 형식 (배열) 지원, 항상 배열 반환
-        const raw = existingFile.statements ?? existingFile;
-        const existingData = Array.isArray(raw) ? raw : [];
-        console.log(`WARNING: Using existing data file with ${existingData.length} statements as fallback`);
-        return existingData;
-      } catch (fallbackError) {
-        console.error('ERROR: Failed to read fallback data file:', fallbackError.message);
-      }
-    }
-    
-    // 데이터가 없으면 빈 배열 반환
-    console.log('WARNING: Returning empty array due to errors');
-    return [];
+    // 보안: 실패 시 기존 JSON을 재사용하지 않는다. 비공개 전환된 항목이 stale JSON으로
+    // 계속 배포될 수 있으므로 fail-closed로 빈 배열을 저장한다.
+    throw error;
   }
 }
 
@@ -311,27 +357,11 @@ async function main() {
     console.error('ERROR: Notion sync failed:', error.message);
     console.error('  Stack:', error.stack);
     
-    // 폴백: 기존 데이터 파일 읽기 시도
-    const dataPath = path.join(__dirname, '..', 'data', 'statements.json');
-    if (fs.existsSync(dataPath)) {
-      try {
-        const existingFile = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        statements = existingFile.statements || existingFile;
-        if (Array.isArray(statements) && statements.length > 0) {
-          console.log(`INFO: Using ${statements.length} cached statements as fallback`);
-          syncStatus = 'partial';
-          errorMessage = `Sync failed, using cached data: ${error.message}`;
-        }
-      } catch (fallbackError) {
-        console.error('ERROR: Failed to read fallback data:', fallbackError.message);
-      }
-    }
-    
-    // 완전 실패 시에도 빈 배열로 저장하여 페이지가 깨지지 않도록 함
-    if (!Array.isArray(statements)) {
-      statements = [];
-    }
+    // 보안: 실패 시 캐시를 재사용하지 않고 빈 JSON으로 덮어쓴다.
+    statements = [];
   } finally {
+    pruneUnreferencedStatementImages(statements);
+
     // Story 2.4: 메타데이터와 함께 저장 (성공/부분 성공/실패 모두)
     const metadata = {
       lastUpdated: new Date().toISOString(),
@@ -347,8 +377,8 @@ async function main() {
     } else if (syncStatus === 'partial') {
       console.log('Notion sync completed with warnings');
     } else {
-      console.log('Notion sync failed, but fallback data saved');
-      // 에러가 있어도 프로세스는 종료하지 않음 (폴백 데이터 저장 완료)
+      console.log('Notion sync failed; empty public data saved');
+      // 에러가 있어도 프로세스는 종료하지 않음 (fail-closed 데이터 저장 완료)
     }
   }
 }

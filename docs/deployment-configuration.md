@@ -12,11 +12,12 @@
 
 ## Deployment Process
 
-### Manual Deployment
+### Automated Deployment
 
-1. GitHub 저장소에 코드 푸시
-2. GitHub Pages 설정에서 브랜치 선택 (보통 `main` 또는 `gh-pages`)
-3. 자동으로 사이트 배포
+1. `main` 브랜치에 코드 푸시
+2. GitHub Actions가 `node scripts/prepare-pages.js` 실행
+3. `_site/` 배포 산출물을 GitHub Pages 아티팩트로 업로드
+4. GitHub Pages가 자동으로 사이트 배포
 
 ### Custom Domain Setup
 
@@ -25,25 +26,28 @@
 
 ## Build Process
 
-**빌드 프로세스 없음**
+**정적 배포 산출물 준비**
 
-- 정적 HTML/CSS/JS 파일 직접 배포
-- 빌드 도구나 번들러 불필요
-- 소스 파일이 그대로 서빙됨
+- 번들러는 사용하지 않음
+- `scripts/prepare-pages.js`가 `_site/`를 생성함
+- `_site/`에는 루트 HTML, CNAME, 공개 JSON, 실제 참조되는 정적 자산만 포함됨
+- `scripts/`, `docs/`, `.github/`, `package*.json` 등 운영/개발 파일은 Pages 산출물에서 제외됨
 
 ## Environment Configuration
 
-**환경 변수 없음**
+**GitHub Actions Secrets**
 
-- 정적 사이트이므로 환경 변수 불필요
-- 모든 설정은 소스 코드에 직접 포함
+- 정적 사이트 런타임에는 환경 변수가 없음
+- Notion 동기화 워크플로는 GitHub Actions Secrets를 사용함
+- 필요한 Secrets: `NOTION_API_KEY`, `NOTION_DATABASE_ID`, `NOTION_STATEMENTS_API_KEY`, `NOTION_STATEMENTS_DATABASE_ID`
 
 ## CI/CD
 
-**CI/CD 파이프라인 없음**
+**GitHub Actions**
 
-- GitHub Pages 자동 배포 사용
-- 추가 CI/CD 설정 불필요
+- Pages 배포 워크플로: `.github/workflows/pages-deploy.yml`
+- Notion 활동 동기화: `.github/workflows/sync-notion.yml`
+- Notion 성명 동기화: `.github/workflows/sync-notion-statements.yml`
 
 ## Deployment Checklist
 
@@ -58,7 +62,7 @@ GitHub에서 이전 커밋으로 되돌리기:
 
 1. GitHub 저장소에서 이전 커밋 선택
 2. 해당 커밋으로 되돌리기
-3. GitHub Pages 자동 재배포
+3. GitHub Actions가 `_site/`를 다시 생성하고 GitHub Pages 자동 재배포
 
 ## Monitoring
 

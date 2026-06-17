@@ -39,15 +39,17 @@
 
     const { title, date, summary, slug } = activity;
     const formattedDate = formatDateKorean(date);
+    const safeSlug = escapeHtml(slug);
+    const idSlug = String(slug == null ? '' : slug).replace(/[^a-zA-Z0-9_-]/g, '-');
     
     // 상세 페이지 링크 (Story 1.4에서 구현 예정, 현재는 #으로)
     const detailUrl = `./activities.html?activity=${encodeURIComponent(slug)}`;
 
     // Story 3.3: 스크린 리더 접근성 - ARIA 레이블 및 시맨틱 구조
     return `
-      <article class="card activity-card" data-activity-slug="${slug}" aria-labelledby="activity-title-${slug}">
+      <article class="card activity-card" data-activity-slug="${safeSlug}" aria-labelledby="activity-title-${idSlug}">
         <header class="activity-header">
-          <h3 class="activity-title" id="activity-title-${slug}">
+          <h3 class="activity-title" id="activity-title-${idSlug}">
             <a href="${detailUrl}" class="activity-link" aria-label="${escapeHtml(title)} - 상세 보기">${escapeHtml(title)}</a>
           </h3>
           <time class="activity-date" datetime="${date.toISOString()}" aria-label="활동 날짜: ${formattedDate}">

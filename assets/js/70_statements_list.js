@@ -39,15 +39,17 @@
 
     const { title, date, summary, slug } = statement;
     const formattedDate = formatDateKorean(date);
+    const safeSlug = escapeHtml(slug);
+    const idSlug = String(slug == null ? '' : slug).replace(/[^a-zA-Z0-9_-]/g, '-');
     
     // 상세 페이지 링크 (Story 1.4에서 구현 예정, 현재는 #으로)
     const detailUrl = `./poli-statements.html?statement=${encodeURIComponent(slug)}`;
 
     // Story 3.3: 스크린 리더 접근성 - ARIA 레이블 및 시맨틱 구조
     return `
-      <article class="card statement-card" data-statement-slug="${slug}" aria-labelledby="statement-title-${slug}">
+      <article class="card statement-card" data-statement-slug="${safeSlug}" aria-labelledby="statement-title-${idSlug}">
         <header class="statement-header">
-          <h3 class="statement-title" id="statement-title-${slug}">
+          <h3 class="statement-title" id="statement-title-${idSlug}">
             <a href="${detailUrl}" class="statement-link" aria-label="${escapeHtml(title)} - 상세 보기">${escapeHtml(title)}</a>
           </h3>
           <time class="statement-date" datetime="${date.toISOString()}" aria-label="성명 날짜: ${formattedDate}">
