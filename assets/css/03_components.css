@@ -896,6 +896,7 @@ button.btn {
 ========================= */
 .header-bar{
   padding: 0;
+  --header-control-size: 3.2rem;
 }
 
 .brand-link{
@@ -903,11 +904,18 @@ button.btn {
 }
 
 .logo{
-  width        : 3.4rem;
-  height       : 3.4rem;
+  width        : var(--header-control-size);
+  height       : var(--header-control-size);
   border       : 0;
   border-radius: 0;
   box-shadow   : none;
+}
+
+button.menu-toggle,
+button.theme-toggle{
+  inline-size : var(--header-control-size);
+  block-size  : var(--header-control-size);
+  aspect-ratio: 1 / 1;
 }
 
 .nav{
@@ -940,15 +948,16 @@ button.btn {
 }
 
 .language-switch{
-  block-size      : 2.6rem;
+  block-size      : var(--header-control-size);
   background-color: transparent;
   border-color    : var(--bd-1, var(--line));
   border-radius   : var(--r, 3px);
 }
 
 .language-option{
-  inline-size   : 2.8rem;
-  block-size    : 2.6rem;
+  inline-size   : var(--header-control-size);
+  block-size    : var(--header-control-size);
+  aspect-ratio  : 1 / 1;
   color         : var(--tx-1, var(--text-primary));
   font-size     : 0.68rem;
   font-weight   : 700;
