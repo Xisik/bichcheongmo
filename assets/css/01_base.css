@@ -17,9 +17,14 @@ body {
   padding         : 12px;
   overflow-x      : hidden;
   overflow-wrap   : break-word;
+  word-break      : keep-all;
 }
 
 * { box-sizing: border-box; }
+
+* {
+  min-width: 0;
+}
 
 body::before {
   content       : '';
@@ -52,6 +57,15 @@ a:hover {
 
 p { margin: 0 0 1rem 0; }
 
+p,
+li,
+dd,
+figcaption,
+.content {
+  text-wrap    : pretty;
+  overflow-wrap: anywhere;
+}
+
 mark {
   background-color: var(--text-primary);
   color           : var(--text-secondary);
@@ -64,6 +78,8 @@ h1 {
   letter-spacing: -0.03em;
   line-height   : 0.95;
   margin        : 0 0 1rem 0;
+  text-wrap     : balance;
+  overflow-wrap : anywhere;
 }
 
 h2 {
@@ -75,6 +91,8 @@ h2 {
   margin        : 0 0 1.5rem 0;
   line-height   : 1.18;
   letter-spacing: -0.02em;
+  text-wrap     : balance;
+  overflow-wrap : anywhere;
 }
 
 h2::after {
@@ -90,6 +108,8 @@ h3, h4, h5, h6 {
   font-weight   : 700;
   letter-spacing: 0;
   margin: 0 0 0.75rem 0;
+  text-wrap     : balance;
+  overflow-wrap : anywhere;
 }
 
 blockquote {

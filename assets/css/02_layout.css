@@ -32,6 +32,10 @@
   .site-header{
     position: static;
   }
+
+  .container{
+    width: min(var(--container-max), calc(100% - 1.25rem));
+  }
 }
 
 .header-bar{

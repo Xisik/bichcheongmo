@@ -434,6 +434,17 @@ button.btn {
   text-align: center;
 }
 
+.activity-image,
+.statement-image{
+  display      : grid;
+  place-items  : center;
+  margin       : 2rem 0;
+  padding      : clamp(0.75rem, 2vw, 1.5rem);
+  background   : linear-gradient(135deg, var(--bg-2, var(--surface)), var(--bg-0));
+  border       : 1px solid var(--bd-1, var(--line));
+  border-radius: var(--r, 3px);
+}
+
 .statement-detail-image{
   width: 512px;
 }
@@ -469,15 +480,18 @@ button.btn {
 /* =========================
    Activity Detail Page
 ========================= */
-.activity-detail{
+.activity-detail,
+.statement-detail{
   margin-bottom: 1rem;
 }
 
-.activity-detail-header{
+.activity-detail-header,
+.statement-detail-header{
   margin-bottom: 1.5rem;
 }
 
-.activity-detail-meta{
+.activity-detail-meta,
+.statement-detail-meta{
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -485,7 +499,8 @@ button.btn {
   flex-wrap: wrap;
 }
 
-.activity-category{
+.activity-category,
+.statement-category{
   display      : inline-block;
   padding      : 0.2rem 0.55rem;
   background-color: var(--bg-2, var(--text-secondary));
@@ -498,19 +513,22 @@ button.btn {
   color        : var(--tx-1, var(--text-shadow));
 }
 
-.activity-detail-date{
+.activity-detail-date,
+.statement-detail-date{
   font-size: 0.9rem;
   color: var(--text-shadow);
 }
 
-.activity-detail-title{
+.activity-detail-title,
+.statement-detail-title{
   margin: 0 0 0.75rem 0;
   font-size: 1.75rem;
   font-weight: normal;
   line-height: 1.4;
 }
 
-.activity-detail-summary{
+.activity-detail-summary,
+.statement-detail-summary{
   font-size: 1.1rem;
   color: var(--text-shadow);
   margin: 0;
@@ -526,45 +544,101 @@ button.btn {
   width: 512px;
 }
 
-.activity-detail-body{
+.activity-detail-image,
+.statement-detail-image,
+.activity-detail-body img,
+.statement-detail-body img{
+  display      : block;
+  width        : min(100%, 960px);
+  max-height   : min(70vh, 620px);
+  margin       : 0 auto;
+  object-fit   : contain;
+  border-radius: calc(var(--r, 3px) * 1.5);
+}
+
+.activity-detail-body figure,
+.statement-detail-body figure{
+  display    : grid;
+  gap        : 0.75rem;
+  margin     : 2rem 0;
+  padding    : clamp(0.75rem, 2vw, 1.25rem);
+  background : var(--bg-2, var(--surface));
+  border     : 1px solid var(--bd-1, var(--line));
+}
+
+.activity-detail-body figure img,
+.statement-detail-body figure img{
+  width: 100%;
+}
+
+.activity-detail-body figcaption,
+.statement-detail-body figcaption{
+  color     : var(--tx-2, var(--text-shadow));
+  font-size : 0.88rem;
+  text-align: center;
+}
+
+.activity-detail-body,
+.statement-detail-body{
   margin: 1.5rem 0;
   line-height: 1.8;
 }
 
+.activity-detail,
+.statement-detail,
+.activity-card,
+.statement-card,
+.join-item,
+.contact-item,
+.footer-legal{
+  overflow-wrap: anywhere;
+}
+
 .activity-detail-body h1,
 .activity-detail-body h2,
-.activity-detail-body h3{
+.activity-detail-body h3,
+.statement-detail-body h1,
+.statement-detail-body h2,
+.statement-detail-body h3{
   margin: 1.5rem 0 0.75rem 0;
   font-weight: normal;
 }
 
-.activity-detail-body h1{
+.activity-detail-body h1,
+.statement-detail-body h1{
   font-size: 1.5rem;
 }
 
-.activity-detail-body h2{
+.activity-detail-body h2,
+.statement-detail-body h2{
   font-size: 1.3rem;
 }
 
-.activity-detail-body h3{
+.activity-detail-body h3,
+.statement-detail-body h3{
   font-size: 1.1rem;
 }
 
-.activity-detail-body p{
+.activity-detail-body p,
+.statement-detail-body p{
   margin: 0 0 1rem 0;
 }
 
 .activity-detail-body ul,
-.activity-detail-body ol{
+.activity-detail-body ol,
+.statement-detail-body ul,
+.statement-detail-body ol{
   margin: 0 0 1rem 1.5rem;
   padding: 0;
 }
 
-.activity-detail-body li{
+.activity-detail-body li,
+.statement-detail-body li{
   margin: 0.5rem 0;
 }
 
-.activity-detail-body code{
+.activity-detail-body code,
+.statement-detail-body code{
   background-color: var(--bg-2, var(--text-secondary));
   border          : 1px solid var(--bd-1, var(--line));
   padding         : 0.15rem 0.4rem;
@@ -572,7 +646,8 @@ button.btn {
   font-size       : 0.875em;
 }
 
-.activity-detail-body pre{
+.activity-detail-body pre,
+.statement-detail-body pre{
   background-color: var(--bg-2, var(--text-secondary));
   border          : 1px solid var(--bd-1, var(--line));
   border-radius   : var(--r, 6px);
@@ -581,26 +656,31 @@ button.btn {
   margin          : 1rem 0;
 }
 
-.activity-detail-body pre code{
+.activity-detail-body pre code,
+.statement-detail-body pre code{
   background-color: transparent;
   padding: 0;
 }
 
-.activity-detail-body a{
+.activity-detail-body a,
+.statement-detail-body a{
   color: var(--text-primary);
   text-decoration: underline;
   text-underline-offset: 0.25rem;
 }
 
-.activity-detail-body a:hover{
+.activity-detail-body a:hover,
+.statement-detail-body a:hover{
   text-decoration: none;
 }
 
-.activity-detail-body strong{
+.activity-detail-body strong,
+.statement-detail-body strong{
   font-weight: bold;
 }
 
-.activity-detail-body em{
+.activity-detail-body em,
+.statement-detail-body em{
   font-style: italic;
 }
 
@@ -922,14 +1002,24 @@ button.btn {
 
 .brand-link{
   padding-left: 0;
+  inline-size : var(--header-control-size);
+  block-size  : var(--header-control-size);
+  display     : inline-flex;
+  align-items : center;
+  justify-content: center;
+  border      : 1px solid var(--bd-1, var(--line));
+  border-radius: var(--r, 3px);
+  overflow    : hidden;
+  background-color: transparent;
 }
 
 .logo{
-  width        : var(--header-control-size);
-  height       : var(--header-control-size);
+  width        : 100%;
+  height       : 100%;
   border       : 0;
   border-radius: 0;
   box-shadow   : none;
+  object-fit   : cover;
 }
 
 button.menu-toggle,
@@ -1112,18 +1202,24 @@ button.theme-toggle{
 .statement-title{
   font-weight   : 700;
   letter-spacing: -0.01em;
+  line-height   : 1.35;
+  overflow-wrap : anywhere;
 }
 
 .activity-link:hover,
 .statement-link:hover,
-.activity-detail-body a:hover{
+.activity-detail-body a:hover,
+.statement-detail-body a:hover{
   color: var(--accent);
 }
 
-.activity-category{
+.activity-category,
+.statement-category{
   background-color: var(--accent);
   border-color    : var(--accent);
   color           : var(--accent-ink);
+  max-width       : 100%;
+  overflow-wrap   : anywhere;
 }
 
 .modal-title::after,
@@ -1143,6 +1239,24 @@ button.theme-toggle{
 
 .info-box{
   background-color: var(--bg-2, var(--surface));
+}
+
+.activity-image,
+.statement-image{
+  display      : grid;
+  place-items  : center;
+  margin       : 2rem 0;
+  padding      : clamp(0.75rem, 2vw, 1.5rem);
+  background   : linear-gradient(135deg, var(--bg-2, var(--surface)), var(--bg-0));
+  border       : 1px solid var(--bd-1, var(--line));
+  border-radius: var(--r, 3px);
+  box-shadow   : var(--shadow-1);
+}
+
+.activity-detail-image,
+.statement-detail-image{
+  inline-size: min(100%, 960px);
+  block-size : auto;
 }
 
 @media (max-width: 640px){
@@ -1177,5 +1291,38 @@ button.theme-toggle{
 
   .quick-links .pill{
     flex: 1 1 100%;
+  }
+
+  .card{
+    padding: 1.25rem;
+  }
+
+  .activity-detail,
+  .statement-detail{
+    padding: 1rem;
+  }
+
+  .activity-detail-title,
+  .statement-detail-title{
+    font-size  : clamp(1.35rem, 9vw, 2rem);
+    line-height: 1.2;
+  }
+
+  .activity-detail-summary,
+  .statement-detail-summary{
+    font-size: 1rem;
+  }
+
+  .activity-detail-body,
+  .statement-detail-body{
+    line-height: 1.75;
+  }
+
+  .activity-image,
+  .statement-image,
+  .activity-detail-body figure,
+  .statement-detail-body figure{
+    margin-inline: -0.25rem;
+    padding      : 0.6rem;
   }
 }
