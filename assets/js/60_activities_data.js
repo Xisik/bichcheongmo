@@ -2,6 +2,8 @@
   'use strict';
 
   const ui = window.__ui || {};
+  const CACHE_KEY = 'bichcheongmo:activities-json:v1';
+  let refreshPromise = null;
   
   /**
    * 활동 데이터 구조 정의 및 파싱 유틸리티
@@ -334,20 +336,88 @@
   }
 
   /**
-   * activities.json 파일을 fetch하고 정규화된 데이터 반환
-   * 캐시 무시를 위해 타임스탬프 쿼리 파라미터 추가
-   * 
+   * 캐시된 activities.json 페이로드 읽기
+   * @returns {Object|null} 캐시된 페이로드 또는 null
+   */
+  function readCachedActivitiesPayload() {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (!cached) return null;
+      const parsed = JSON.parse(cached);
+      return parsed && parsed.payload ? parsed.payload : null;
+    } catch (error) {
+      console.warn('활동 캐시를 읽을 수 없습니다:', error);
+      return null;
+    }
+  }
+
+  /**
+   * activities.json 페이로드 캐시 저장
+   * @param {Object|Array} payload - 저장할 페이로드
+   */
+  function writeCachedActivitiesPayload(payload) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        storedAt: new Date().toISOString(),
+        payload
+      }));
+    } catch (error) {
+      console.warn('활동 캐시를 저장할 수 없습니다:', error);
+    }
+  }
+
+  /**
+   * activities.json 최신 페이로드 fetch
    * @returns {Promise<Object>} { activities: Array, metadata: Object|null } 형태
    */
-  async function fetchActivitiesJson() {
-    // 캐시 무시용 쿼리 붙이기
-    const url = `./data/activities.json?v=${Date.now()}`;
-    const res = await fetch(url, { cache: 'no-store' });
+  async function fetchFreshActivitiesJson() {
+    const res = await fetch('./data/activities.json', { cache: 'no-cache' });
     if (!res.ok) {
       throw new Error(`Failed to fetch activities.json: ${res.status}`);
     }
     const payload = await res.json();
+    writeCachedActivitiesPayload(payload);
     return normalizeActivitiesPayload(payload);
+  }
+
+  /**
+   * 캐시 표시 후 백그라운드 최신화
+   */
+  function refreshActivitiesJsonInBackground() {
+    if (refreshPromise) return refreshPromise;
+
+    refreshPromise = fetchFreshActivitiesJson()
+      .then((normalized) => {
+        window.dispatchEvent(new CustomEvent('bichcheongmo:activities-data-refreshed', {
+          detail: normalized
+        }));
+        return normalized;
+      })
+      .catch((error) => {
+        console.warn('활동 데이터 백그라운드 갱신 실패:', error);
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+
+    return refreshPromise;
+  }
+
+  /**
+   * activities.json 파일을 fetch하고 정규화된 데이터 반환
+   * 캐시된 공개 JSON을 먼저 사용하고 최신 데이터는 백그라운드에서 확인
+   * 
+   * @returns {Promise<Object>} { activities: Array, metadata: Object|null } 형태
+   */
+  async function fetchActivitiesJson() {
+    const cachedPayload = readCachedActivitiesPayload();
+    if (cachedPayload) {
+      refreshActivitiesJsonInBackground();
+      return normalizeActivitiesPayload(cachedPayload);
+    }
+
+    return fetchFreshActivitiesJson();
   }
 
   // Public API
@@ -360,7 +430,8 @@
     generateSlug: generateSlug,
     parseDate: parseDate,
     normalizeActivitiesPayload: normalizeActivitiesPayload,
-    fetchActivitiesJson: fetchActivitiesJson
+    fetchActivitiesJson: fetchActivitiesJson,
+    refreshActivitiesJsonInBackground: refreshActivitiesJsonInBackground
   };
 
   // 전역 API (window.ActivitiesData) - 하위 호환성 및 편의성

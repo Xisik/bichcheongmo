@@ -19,6 +19,13 @@
   let cachedActivities = null;
   let cachedMetadata = null;
 
+  function cacheActivitiesResult(result) {
+    const parsed = parseActivities(result.activities);
+    cachedActivities = parsed;
+    cachedMetadata = result.metadata;
+    return parsed;
+  }
+
   /**
    * 활동 상세 페이지 렌더링
    * 
@@ -54,14 +61,12 @@
       }
 
       // 로딩 상태 표시
-      showLoadingState(container);
+      showLoadingState(container, 'list');
 
       // 데이터 로드
       loadActivitiesData()
         .then(result => {
-          const parsed = parseActivities(result.activities);
-          cachedActivities = parsed;
-          cachedMetadata = result.metadata;
+          const parsed = cacheActivitiesResult(result);
           
           const sorted = sortActivitiesByDate(parsed);
           renderActivityList(sorted, container);
@@ -83,7 +88,7 @@
     // 상세 페이지
     // 로딩 상태 표시
     if (ui.activities.list && ui.activities.list.showLoadingState) {
-      ui.activities.list.showLoadingState(container);
+      ui.activities.list.showLoadingState(container, 'detail');
     }
 
     // 캐시된 데이터가 있으면 사용
@@ -117,9 +122,7 @@
     // 데이터 로드
     loadActivitiesData()
       .then(result => {
-        const parsed = parseActivities(result.activities);
-        cachedActivities = parsed;
-        cachedMetadata = result.metadata;
+        const parsed = cacheActivitiesResult(result);
         
         const activity = findActivityBySlug(parsed, slug);
         
@@ -199,9 +202,9 @@
     }
     
     // 하위 호환성: 정규화 함수가 없으면 기존 방식 사용
-    const url = `./data/activities.json?t=${Date.now()}`;
+    const url = './data/activities.json';
     
-    return fetch(url, { cache: "no-store" })
+    return fetch(url, { cache: 'no-cache' })
       .then(response => {
         if (!response.ok) {
           // JSON 파일이 없거나 에러인 경우 테스트 데이터 사용 (폴백)
@@ -409,6 +412,13 @@
       renderRoute(slug);
     }
   }
+
+  window.addEventListener('bichcheongmo:activities-data-refreshed', (event) => {
+    if (!event.detail) return;
+    cacheActivitiesResult(event.detail);
+    const slug = getActivitySlugFromUrl ? getActivitySlugFromUrl() : null;
+    renderRoute(slug);
+  });
 
   // DOM 로드 완료 후 초기화
   if (document.readyState === 'loading') {

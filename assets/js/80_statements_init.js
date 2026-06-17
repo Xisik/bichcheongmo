@@ -19,6 +19,13 @@
   let cachedStatements = null;
   let cachedMetadata = null;
 
+  function cacheStatementsResult(result) {
+    const parsed = parseStatements(result.statements);
+    cachedStatements = parsed;
+    cachedMetadata = result.metadata;
+    return parsed;
+  }
+
   /**
    * 성명 상세 페이지 렌더링
    * 
@@ -54,14 +61,12 @@
       }
 
       // 로딩 상태 표시
-      showLoadingState(container);
+      showLoadingState(container, 'list');
 
       // 데이터 로드
       loadStatementsData()
         .then(result => {
-          const parsed = parseStatements(result.statements);
-          cachedStatements = parsed;
-          cachedMetadata = result.metadata;
+          const parsed = cacheStatementsResult(result);
           
           const sorted = sortStatementsByDate(parsed);
           renderStatementList(sorted, container);
@@ -84,7 +89,7 @@
     // 상세 페이지
     // 로딩 상태 표시
     if (ui.statements.list && ui.statements.list.showLoadingState) {
-      ui.statements.list.showLoadingState(container);
+      ui.statements.list.showLoadingState(container, 'detail');
     }
 
     // 캐시된 데이터가 있으면 사용
@@ -123,9 +128,7 @@
     // 데이터 로드
     loadStatementsData()
       .then(result => {
-        const parsed = parseStatements(result.statements);
-        cachedStatements = parsed;
-        cachedMetadata = result.metadata;
+        const parsed = cacheStatementsResult(result);
         
         const statement = findStatementBySlug(parsed, slug);
         
@@ -210,9 +213,9 @@
     }
     
     // 하위 호환성: 정규화 함수가 없으면 기존 방식 사용
-    const url = `./data/statements.json?t=${Date.now()}`;
+    const url = './data/statements.json';
     
-    return fetch(url, { cache: "no-store" })
+    return fetch(url, { cache: 'no-cache' })
       .then(response => {
         if (!response.ok) {
           // JSON 파일이 없거나 에러인 경우 테스트 데이터 사용 (폴백)
@@ -354,6 +357,13 @@
       renderRoute(slug);
     }
   }
+
+  window.addEventListener('bichcheongmo:statements-data-refreshed', (event) => {
+    if (!event.detail) return;
+    cacheStatementsResult(event.detail);
+    const slug = getStatementSlugFromUrl ? getStatementSlugFromUrl() : null;
+    renderRoute(slug);
+  });
 
   // DOM 로드 완료 후 초기화
   if (document.readyState === 'loading') {

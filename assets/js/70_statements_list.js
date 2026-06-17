@@ -78,6 +78,10 @@
     return div.innerHTML;
   }
 
+  function t(text) {
+    return ui.i18n && ui.i18n.t ? ui.i18n.t(text) : text;
+  }
+
   /**
    * 빈 상태 메시지 HTML 생성
    * Story 3.3: 스크린 리더 접근성 - 빈 상태 알림
@@ -85,9 +89,9 @@
    */
   function createEmptyState() {
     return `
-      <div class="card content" role="status" aria-live="polite" aria-label="성명 목록이 비어있음">
-        <p>아직 등록된 성명이 없습니다.</p>
-        <p class="small">곧 새로운 성명을 공유할 예정입니다.</p>
+      <div class="card content" role="status" aria-live="polite" aria-label="${escapeHtml(t('성명 목록이 비어있음'))}">
+        <p>${escapeHtml(t('아직 등록된 성명이 없습니다.'))}</p>
+        <p class="small">${escapeHtml(t('곧 새로운 성명을 공유할 예정입니다.'))}</p>
       </div>
     `;
   }
@@ -97,10 +101,20 @@
    * Story 3.3: 스크린 리더 접근성 - 로딩 상태 알림
    * @returns {string} 로딩 상태 메시지 HTML
    */
-  function createLoadingState() {
+  function createLoadingState(mode) {
+    const isDetail = mode === 'detail';
+    const ariaLabel = isDetail ? '성명 상세 로딩 중' : '성명 목록 로딩 중';
+    const title = isDetail
+      ? '성명 상세 내용을 준비하고 있습니다.'
+      : 'Notion에서 성명 자료를 정리하고 있습니다.';
+    const description = isDetail
+      ? '선택한 성명 내용을 불러오는 중입니다.'
+      : '잠시만 기다려주세요. 곧 최신 성명을 보여드릴게요.';
+
     return `
-      <div class="card content" role="status" aria-live="polite" aria-label="성명 목록 로딩 중">
-        <p>성명 목록을 불러오는 중...</p>
+      <div class="card content loading-state" role="status" aria-live="polite" aria-label="${escapeHtml(t(ariaLabel))}">
+        <p class="loading-title">${escapeHtml(t(title))}</p>
+        <p class="small">${escapeHtml(t(description))}</p>
       </div>
     `;
   }
@@ -121,10 +135,10 @@
 
     return `
       <div class="card content" role="alert" aria-live="assertive" aria-label="오류 발생">
-        <p>성명 목록을 불러오는 중 오류가 발생했습니다.</p>
+        <p>${escapeHtml(t('성명 목록을 불러오는 중 오류가 발생했습니다.'))}</p>
         ${message ? `<p class="small">${escapeHtml(message)}</p>` : ''}
         ${lastUpdatedText}
-        <p class="small">잠시 후 다시 시도해주세요.</p>
+        <p class="small">${escapeHtml(t('잠시 후 다시 시도해주세요.'))}</p>
       </div>
     `;
   }
@@ -177,12 +191,12 @@
    * 로딩 상태 표시
    * @param {HTMLElement|string} container - 컨테이너 요소 또는 선택자
    */
-  function showLoadingState(container) {
+  function showLoadingState(container, mode) {
     const $ = ui.$ || ((sel) => document.querySelector(sel));
     const containerEl = typeof container === 'string' ? $(container) : container;
 
     if (containerEl) {
-      containerEl.innerHTML = createLoadingState();
+      containerEl.innerHTML = createLoadingState(mode);
     }
   }
 

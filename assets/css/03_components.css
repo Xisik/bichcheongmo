@@ -343,6 +343,27 @@ button.btn {
   color    : var(--tx-2, var(--text-shadow));
 }
 
+.loading-state{
+  position    : relative;
+  padding-left: 2.75rem;
+}
+
+.loading-state::before{
+  content         : '';
+  position        : absolute;
+  top             : 2rem;
+  left            : 1.4rem;
+  width           : 0.65rem;
+  height          : 0.65rem;
+  border-radius   : 50%;
+  background-color: var(--accent);
+}
+
+.loading-title{
+  margin     : 0 0 0.4rem 0;
+  font-weight: 700;
+}
+
 /* =========================
    Activities List
 ========================= */

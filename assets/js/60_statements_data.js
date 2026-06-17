@@ -2,6 +2,8 @@
   'use strict';
 
   const ui = window.__ui || {};
+  const CACHE_KEY = 'bichcheongmo:statements-json:v1';
+  let refreshPromise = null;
   
   /**
    * 성명 데이터 구조 정의 및 파싱 유틸리티
@@ -345,20 +347,88 @@
   }
 
   /**
-   * statements.json 파일을 fetch하고 정규화된 데이터 반환
-   * 캐시 무시를 위해 타임스탬프 쿼리 파라미터 추가
-   * 
+   * 캐시된 statements.json 페이로드 읽기
+   * @returns {Object|null} 캐시된 페이로드 또는 null
+   */
+  function readCachedStatementsPayload() {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (!cached) return null;
+      const parsed = JSON.parse(cached);
+      return parsed && parsed.payload ? parsed.payload : null;
+    } catch (error) {
+      console.warn('성명 캐시를 읽을 수 없습니다:', error);
+      return null;
+    }
+  }
+
+  /**
+   * statements.json 페이로드 캐시 저장
+   * @param {Object|Array} payload - 저장할 페이로드
+   */
+  function writeCachedStatementsPayload(payload) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        storedAt: new Date().toISOString(),
+        payload
+      }));
+    } catch (error) {
+      console.warn('성명 캐시를 저장할 수 없습니다:', error);
+    }
+  }
+
+  /**
+   * statements.json 최신 페이로드 fetch
    * @returns {Promise<Object>} { statements: Array, metadata: Object|null } 형태
    */
-  async function fetchStatementsJson() {
-    // 캐시 무시용 쿼리 붙이기
-    const url = `./data/statements.json?v=${Date.now()}`;
-    const res = await fetch(url, { cache: 'no-store' });
+  async function fetchFreshStatementsJson() {
+    const res = await fetch('./data/statements.json', { cache: 'no-cache' });
     if (!res.ok) {
       throw new Error(`Failed to fetch statements.json: ${res.status}`);
     }
     const payload = await res.json();
+    writeCachedStatementsPayload(payload);
     return normalizeStatementsPayload(payload);
+  }
+
+  /**
+   * 캐시 표시 후 백그라운드 최신화
+   */
+  function refreshStatementsJsonInBackground() {
+    if (refreshPromise) return refreshPromise;
+
+    refreshPromise = fetchFreshStatementsJson()
+      .then((normalized) => {
+        window.dispatchEvent(new CustomEvent('bichcheongmo:statements-data-refreshed', {
+          detail: normalized
+        }));
+        return normalized;
+      })
+      .catch((error) => {
+        console.warn('성명 데이터 백그라운드 갱신 실패:', error);
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+
+    return refreshPromise;
+  }
+
+  /**
+   * statements.json 파일을 fetch하고 정규화된 데이터 반환
+   * 캐시된 공개 JSON을 먼저 사용하고 최신 데이터는 백그라운드에서 확인
+   * 
+   * @returns {Promise<Object>} { statements: Array, metadata: Object|null } 형태
+   */
+  async function fetchStatementsJson() {
+    const cachedPayload = readCachedStatementsPayload();
+    if (cachedPayload) {
+      refreshStatementsJsonInBackground();
+      return normalizeStatementsPayload(cachedPayload);
+    }
+
+    return fetchFreshStatementsJson();
   }
 
   // Public API
@@ -371,7 +441,8 @@
     generateSlug: generateSlug,
     parseDate: parseDate,
     normalizeStatementsPayload: normalizeStatementsPayload,
-    fetchStatementsJson: fetchStatementsJson
+    fetchStatementsJson: fetchStatementsJson,
+    refreshStatementsJsonInBackground: refreshStatementsJsonInBackground
   };
 
   // 전역 API (window.statementsData) - 하위 호환성 및 편의성
