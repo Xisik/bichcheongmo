@@ -118,8 +118,18 @@
     '커뮤니티 모임 및 행사 운영': 'Operating community gatherings and events',
     '홍보용 굿즈 제작': 'Creating promotional goods',
     '퀴어 관련 행사 부스 운영': 'Running booths at queer-related events',
+    '빛청모 후원하기': 'Donate to Bichcheongmo',
+    '정기 후원': 'Recurring Donation',
+    '일시 후원': 'One-Time Donation',
     '정기후원': 'Recurring donation',
     '일시후원': 'One-time donation',
+    '개발자 후원하기(별도)': 'Support the Developer (Separate)',
+    '본 후원은 대한민국 민법 제554조에 따른 증여계약의 성격을 가지며, 후원자의 의사에 따라 개발자 개인에게 무상으로 제공되는 재산입니다. 후원금은 빛나는우리청소년성소수자모임에 대한 기부금이나 회비가 아니며, 단체의 재산 또는 회계에 편입되지 않습니다. 후원금은 홈페이지 개발, 유지보수, 서버 운영, 보안 관리 및 기타 기술적 활동을 수행하는 개발자 개인에게 직접 귀속되며, 대한민국 민법에 따라 개발자 개인의 재산으로 관리됩니다. 본 후원은 단체에 대한 후원과 법적으로 구분되며, 단체에 대한 기부 또는 후원을 희망하는 경우에는 별도의 빛나는우리청소년성소수자모임 후원 경로를 이용하여 주시기 바랍니다.': 'This support is a gift agreement under Article 554 of the Civil Act of the Republic of Korea. It is property provided free of charge to the individual developer according to the donor\'s intent. These funds are not donations or membership dues for Shining Us, LGBTQ Youth, and are not included in the organization\'s property or accounting. They belong directly to the individual developer who performs website development, maintenance, server operation, security management, and other technical work, and are managed as the developer\'s personal property under Korean civil law. This support is legally separate from donations to the organization. If you wish to donate to the organization, please use the separate Bichcheongmo donation channel.',
+    '개발자 후원금은 다음과 같은 활동에 사용됩니다:': 'Developer support is used for the following activities:',
+    '사이트 수정 및 유지 보수비': 'Website updates and maintenance costs',
+    '빛청모 산하 타 사이트 운영': 'Operation of other Bichcheongmo-related sites',
+    '그 외의 개인 개발을 위한 자금': 'Other personal development costs',
+    '개발자 후원': 'Support the Developer',
 
     '빛청모 정치위원회': 'Bichcheongmo Political Committee',
     '청소년의 정치적 권리를 선언하다': 'Declaring the political rights of youth',
@@ -208,6 +218,7 @@
 
     '사업자번호 231-82-77851': 'Business registration no. 231-82-77851',
     '본 단체는 관할 세무서에 등록된 임의단체로써 고유사업 외의 수익 사업을 영위하지 않습니다': 'This organization is a registered unincorporated association and does not conduct profit-making activities outside its stated purposes.',
+    '제3자 라이선스 고지': 'Third-Party Notices',
     '© 빛청모': '© Bichcheongmo'
   };
 
