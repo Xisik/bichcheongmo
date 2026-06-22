@@ -52,6 +52,9 @@ jobs:
         with:
           path: '_site'    # 보안: scripts/, docs/, .github/ 등 비공개 파일 제외
 
+      - name: Set Google Analytics ID
+        run: sed -i "s/REPLACE_ME_GA_ID/${{ secrets.ANALYTICS_API_URL }}/g" analytics.js
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5       # Node 24 compatible
