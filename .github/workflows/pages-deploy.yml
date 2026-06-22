@@ -49,10 +49,10 @@ jobs:
 
       - name: Set Google Analytics ID
         env:
-          GA_MEASUREMENT_ID: ${{ vars.ANALYTICS_API_KEY }}
+          GA_MEASUREMENT_ID: ${{ vars.ANALYTICS_API_KEY || secrets.ANALYTICS_API_KEY }}
         run: |
           if [ -z "$GA_MEASUREMENT_ID" ]; then
-            echo "Google Analytics measurement ID secret is not configured." >&2
+            echo "Google Analytics measurement ID is not configured. Set ANALYTICS_API_KEY as an Actions variable or secret." >&2
             exit 1
           fi
           sed -i "s/REPLACE_ME_GA_ID/${GA_MEASUREMENT_ID}/g" _site/assets/js/01_analytics.js
