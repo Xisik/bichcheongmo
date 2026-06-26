@@ -338,6 +338,7 @@ button.region-branch-header:focus-visible {
   block-size: var(--header-control-size);
   aspect-ratio: 1 / 1;
   flex: 0 0 var(--header-control-size);
+  z-index: 10;
 }
 
 .site-header .language-switch {
@@ -382,13 +383,16 @@ button.region-branch-header:focus-visible {
   }
 
   .site-header .nav {
+    width: 100%;
+    top: 0;
+    position: absolute;
+
     order: 2;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: center;
     gap: 0.65rem;
-    width: auto;
     max-height: none;
     opacity: 1;
     overflow: visible;
@@ -523,4 +527,8 @@ button.region-branch-header:focus-visible {
 .region-branch-card {
   inline-size: 100%;
   max-inline-size: 100%;
+}
+
+.site-header .container {
+  position: relative;
 }
