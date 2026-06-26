@@ -1,17 +1,22 @@
 {
   "name": "bichcheongmo",
-  "version": "3.4.1",
+  "version": "4.0.0",
   "description": "성소수자 공조 단체용 정적 사이트입니다.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
+    "dev": "vite",
     "sync:activities": "node scripts/sync-notion.js",
     "sync:statements": "node scripts/sync-notion-statements.js",
     "sync:payments": "node scripts/sync-payments.js",
-    "prepare-pages": "node scripts/prepare-pages.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "optimize:assets": "node scripts/optimize-assets.js",
+    "build": "npm run optimize:assets && vite build && node scripts/copy-vite-static.js",
+    "build:site": "npm run build",
+    "preview": "vite preview --host 127.0.0.1",
+    "prepare-pages": "npm run build",
+    "test": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -25,6 +30,14 @@
   },
   "homepage": "https://github.com/Xisik/bichcheongmo#readme",
   "dependencies": {
-    "@notionhq/client": "^5.6.0"
+    "@notionhq/client": "^5.6.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "esbuild": "^0.28.1",
+    "sharp": "^0.35.2",
+    "vite": "^8.1.0"
   }
 }

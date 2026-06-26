@@ -273,6 +273,25 @@
     return true;
   }
 
+  function createGeneratedImageSrcset(image) {
+    const match = String(image || '').match(/^(\.\/)?assets\/img\/(.+)\.(png|jpe?g)$/i);
+    if (!match) return '';
+
+    const basePath = `./assets/img/generated/${match[2]}`;
+    return [360, 720, 1080, 1440]
+      .map(width => `${basePath}-${width}.webp ${width}w`)
+      .join(', ');
+  }
+
+  function createDetailImage(image, className, alt) {
+    const srcset = createGeneratedImageSrcset(image);
+    const responsiveAttrs = srcset
+      ? ` srcset="${escapeHtml(srcset)}" sizes="(max-width: 960px) 100vw, 960px"`
+      : '';
+
+    return `<img class="${className}" src="${escapeHtml(image)}"${responsiveAttrs} alt="${alt}" loading="lazy" decoding="async">`;
+  }
+
   /**
    * 슬러그를 유효한 HTML id 토큰으로 정규화
    * @param {string} slug - 원본 슬러그
@@ -304,7 +323,7 @@
       const imageAlt = `${escapeHtml(title)} 활동 이미지`;
       imageHtml = `
         <div class="activity-image" role="img" aria-label="${imageAlt}">
-          <img class="activity-detail-image" src="${escapeHtml(image)}" alt="${imageAlt}" loading="lazy">
+          ${createDetailImage(image, 'activity-detail-image', imageAlt)}
         </div>
       `;
     }

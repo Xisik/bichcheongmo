@@ -1,10 +1,10 @@
 /* assets/css/02_layout.css
-   Layout primitives: container, header/footer layout, grid layout, page spacing.
-   Component visuals are in 03_components.css
+   Layout primitives: containers, page flow, responsive grids, header/footer layout.
+   Component visuals are in 03_components.css.
 */
 
 .container{
-  width : min(var(--container-max), calc(100% - 3rem));
+  width : min(var(--container-max), calc(100% - var(--container-gutter) - var(--container-gutter)));
   margin: 0 auto;
 }
 
@@ -16,7 +16,6 @@
   top                : 0;
   z-index            : 20;
   margin             : 0;
-
   background         : color-mix(in srgb, var(--bg-0) 94%, transparent);
   border-bottom      : 1px solid var(--bd-0, var(--line));
   box-shadow         : var(--shadow-1);
@@ -28,24 +27,10 @@
   display: none;
 }
 
-@media (max-width: 640px){
-  .site-header{
-    position: static;
-  }
-
-  .container{
-    width: min(var(--container-max), calc(100% - 1.25rem));
-  }
-}
-
 .header-bar{
-  display        : flex;
-  align-items    : center;
-  gap            : 0 1rem;
-  min-height     : 4.25rem;
+  min-height: 4.25rem;
 }
 
-/* 우측 버튼 묶음은 항상 오른쪽 끝 */
 .header-actions{
   margin-left: auto;
   display    : flex;
@@ -53,52 +38,69 @@
   gap        : 0.5rem;
 }
 
-/* 데스크톱: MENU는 무조건 숨김(전역 버튼 display를 이김) */
 button.menu-toggle{
   display: none;
 }
 
-/* 모바일: 헤더 줄바꿈 + nav 토글 */
-@media (max-width: 640px){
+@media (max-width: 920px) and (min-width: 641px){
   .header-bar{
-    flex-wrap  : wrap;
-    align-items: flex-start;
+    flex-wrap: wrap;
   }
 
-  /* 모바일에서만 MENU 표시(다크 모드 왼쪽은 HTML 순서로 이미 보장) */
-  button.menu-toggle{
-    display: inline-flex;
-  }
-
-  /* nav는 다음 줄로 내리고 기본 닫힘(패딩 0으로 여백 제거) */
   .nav{
-    flex-basis: 100%;
-    width     : 100%;
     order     : 3;
-
-    display        : flex;
-    flex-direction : column;
-    align-items    : center;  /* 가운데 정렬 */
-    gap            : 0.35rem;
-
-    overflow       : hidden;
-    max-height     : 0;
-    opacity        : 0;
-
-    padding        : 0;      /* 닫힘: 여백 0 */
-    margin         : 0;
-
-    transition: max-height 220ms ease, opacity 160ms ease, padding 220ms ease;
-  }
-
-  .nav.is-open{
-    max-height: 420px;
-    opacity   : 1;
-    padding   : 0.6rem 0 0 0; /* 열림: 위쪽만 살짝 */
+    flex-basis: 100%;
+    justify-content: center;
   }
 }
 
-/* 데스크톱에서는 nav가 항상 펼쳐진 상태 */
+@media (max-width: 640px){
+  .container{
+    width         : 100%;
+    padding-inline: var(--container-gutter);
+  }
+
+  .site-header{
+    position: static;
+  }
+
+  .header-bar{
+    flex-wrap  : wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .header-actions{
+    margin-left: 0;
+  }
+
+  button.menu-toggle,
+  .menu-toggle{
+    display: inline-flex;
+  }
+
+  .nav{
+    flex-basis     : 100%;
+    width          : 100%;
+    order          : 3;
+    flex-direction : column;
+    align-items    : center;
+    gap            : 0.35rem;
+    overflow       : hidden;
+    max-height     : 0;
+    opacity        : 0;
+    padding        : 0;
+    margin         : 0;
+    transition     : max-height 220ms ease, opacity 160ms ease, padding 220ms ease;
+  }
+
+  .nav.is-open{
+    max-height: 640px;
+    opacity   : 1;
+    padding   : 0.6rem 0 0 0;
+  }
+}
+
 @media (min-width: 641px){
   .nav{
     max-height: none;
@@ -107,75 +109,81 @@ button.menu-toggle{
   }
 }
 
-
 /* =========================
-   Page sections
+   Page flow
 ========================= */
+main.container{
+  display              : grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap                  : var(--section-gap);
+  padding-block        : clamp(1rem, 2.5vw, 2rem) 0;
+}
+
 .hero,
 .page-header{
-  margin-bottom: 2.5rem;
-  padding      : clamp(3rem, 8vw, 6rem) 0 clamp(2rem, 5vw, 4rem) 0;
+  margin-bottom: 0;
+  padding      : clamp(2.5rem, 7vw, 6rem) 0 clamp(1.5rem, 4vw, 3.5rem) 0;
 }
 
 .hero p,
 .page-header p{
-  max-width  : 760px;
+  max-width  : var(--container-readable);
   color      : var(--tx-2, var(--text-shadow));
   font-size  : clamp(1rem, 1.6vw, 1.15rem);
   font-weight: 300;
 }
 
+main.container > .card,
+main.container > .content,
+main.container > article,
+main.container > section{
+  min-width: 0;
+}
+
 /* =========================
-   Main grid / cards
+   System grids
 ========================= */
 .grid{
   display              : grid;
-  grid-template-columns: 1fr;
-  gap                  : 1.5rem;
-  margin               : 1rem 0 2rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-card-min)), 1fr));
+  gap                  : var(--card-gap);
+  margin               : 0;
 }
 
-.card{
-  grid-column: auto;
-  min-width  : 0;
+.activities-container,
+.payments-container{
+  display              : grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-card-wide-min)), 1fr));
+  gap                  : var(--card-gap);
+  margin               : 0 0 1.25rem 0;
+  align-items          : stretch;
 }
 
-@media (min-width: 720px){
-  .grid{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .grid > .card:nth-last-of-type(1):nth-child(odd){
-    grid-column: 1 / -1;
-  }
-}
-
-@media (min-width: 980px){
-  .grid{
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .grid > .card:nth-last-of-type(1):nth-child(odd){
-    grid-column: auto;
-  }
+.activities-container > .content,
+.payments-container > .content{
+  grid-column: 1 / -1;
 }
 
 /* =========================
    Footer
 ========================= */
 .site-footer{
-  margin     : 4rem 0 1.5rem 0;
-  padding-top: 2rem;
+  margin     : clamp(3rem, 7vw, 5rem) 0 1.5rem 0;
+  padding-top: clamp(1.25rem, 3vw, 2rem);
   border-top : 1px solid var(--bd-0, var(--line));
 }
 
 .footer-inner{
-  display         : flex;
-  flex-direction  : column;
-  justify-content : flex-start;
-  align-items     : stretch;
-  gap             : 1.25rem;
-  flex-wrap       : wrap;
+  display              : grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap                  : 1rem;
+  align-items          : start;
+}
+
+@media (min-width: 860px){
+  .footer-inner{
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
 }
 
 .footer-legal{
@@ -183,69 +191,20 @@ button.menu-toggle{
 }
 
 /* =========================
-   Mobile: MENU toggle nav
+   Home page
 ========================= */
-@media (max-width: 640px){
-  .site-header .header-inner{
-    flex-wrap  : wrap;
-    align-items: flex-start;
-  }
-
-  /* 모바일에서만 MENU 버튼 표시(다크 모드 왼쪽은 HTML 순서로 해결) */
-  .menu-toggle{
-    display: inline-block;
-  }
-
-  /* brand-shell 내부에서 로고 아래로 nav가 내려갈 수 있도록 */
-  .brand-shell{
-    flex-wrap  : wrap;
-    align-items: center;
-    gap        : 0.6rem;
-  }
-
-  .nav{
-    flex-basis : 100%;
-    width      : 100%;
-
-    flex-direction: column;
-    align-items   : center;  /* 가운데 정렬 */
-    gap           : 0.35rem;
-
-    overflow   : hidden;
-    max-height : 0;
-    opacity    : 0;
-
-    transition : max-height 220ms ease, opacity 160ms ease;
-  }
-
-  .nav.is-open{
-    max-height: 600px;
-    opacity   : 1;
-    margin-top: 0.6rem;
-  }
-}
-
-/* 데스크톱에서는 nav가 항상 펼쳐져야 함(모바일 토글 영향 제거) */
-@media (min-width: 641px){
-  .nav{
-    max-height: none;
-    opacity   : 1;
-    overflow  : visible;
-  }
-}
-
 .index_main_grid{
   padding-top: clamp(1rem, 2vw, 1.5rem);
 }
 
 .index_main_grid > .main-content{
   display              : grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(18rem, 1.15fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(20rem, 1.15fr);
   grid-template-areas  :
     "hero slides"
     "buttons buttons"
     "quick quick";
-  grid-template-rows   : minmax(24rem, calc(100svh - 8rem)) auto auto;
+  grid-template-rows   : minmax(24rem, auto) auto auto;
   align-items          : center;
   gap                  : clamp(1.5rem, 4vw, 4rem);
 }
@@ -277,15 +236,16 @@ button.menu-toggle{
 }
 
 .index_main_grid .grid{
-  grid-area : buttons;
-  margin-top: clamp(2.5rem, 8vh, 5rem);
+  grid-area             : buttons;
+  grid-template-columns : repeat(3, minmax(0, 1fr));
+  margin-top            : clamp(1.25rem, 5vh, 3.5rem);
 }
 
 .index_main_grid .quick-links{
   grid-area: quick;
 }
 
-@media (max-width: 860px), (max-aspect-ratio: 4 / 5){
+@media (max-width: 960px), (max-aspect-ratio: 4 / 5){
   .index_main_grid{
     padding-top: 0;
   }
@@ -312,11 +272,31 @@ button.menu-toggle{
   }
 
   .index_main_grid .grid{
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    margin-top           : 0;
   }
 }
 
-.donate-container-grid {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
+/* =========================
+   Donate page
+========================= */
+.donate-container-grid{
+  display              : grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(20rem, 1.05fr);
+  gap                  : var(--section-gap);
+  align-items          : start;
+}
+
+.donate-container-grid > .page-header{
+  padding: clamp(1.5rem, 4vw, 3rem) 0;
+}
+
+.donate-container-grid > .card{
+  align-self: stretch;
+}
+
+@media (max-width: 900px){
+  .donate-container-grid{
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

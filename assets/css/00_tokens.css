@@ -31,7 +31,14 @@
   --accent-ribbon: linear-gradient(90deg, var(--accent), var(--accent));
 
   --r:             3px;
-  --container-max: 1245px;
+  --container-max: 1500px;
+  --container-readable: 860px;
+  --container-gutter: clamp(1rem, 4vw, 3rem);
+  --page-gap: clamp(2rem, 5vw, 4rem);
+  --section-gap: clamp(1.25rem, 3vw, 2rem);
+  --card-gap: clamp(0.9rem, 2vw, 1.5rem);
+  --grid-card-min: 18rem;
+  --grid-card-wide-min: 22rem;
 
   --main-bg-color:  var(--bg-0);
   --text-primary:   var(--tx-0);
