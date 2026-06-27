@@ -93,7 +93,7 @@
    * 성명 목록 페이지 SEO 설정
    */
   function setListPageSEO() {
-    const title = t('빛청모 | 성명공유');
+    const title = '성명 | Statements';
     const description = t('빛청모의 다양한 성명과 소식을 공유하는 공간입니다.');
     const url = window.location.origin + window.location.pathname;
     const image = window.location.origin + '/assets/img/logo.jpg';
@@ -139,7 +139,7 @@
     }
 
     const { title, summary, body, slug, date, image } = statement;
-    const siteTitle = t('빛청모 | 성명공유');
+    const siteTitle = '성명 | Statements';
     const pageTitle = `${title} | ${siteTitle}`;
     const description = summary || body.substring(0, 160) || t('빛청모의 성명을 확인하세요.');
     const url = window.location.origin + window.location.pathname + `?statement=${encodeURIComponent(slug)}`;

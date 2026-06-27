@@ -28,7 +28,7 @@ function copyDir(relPath) {
   }
 }
 
-function writeRedirect(fileName, hashPath) {
+function writeRedirect(fileName, hashPath, title) {
   const target = path.join(OUT, fileName);
   const html = `<!doctype html>
 <html lang="ko">
@@ -36,7 +36,14 @@ function writeRedirect(fileName, hashPath) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="refresh" content="0; url=./#${hashPath}" />
-    <title>Redirecting...</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/img/logo.jpg" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="Bichcheongmo website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="Bichcheongmo website" />
+    <title>${title}</title>
   </head>
   <body>
     <a href="./#${hashPath}">Go to ${hashPath}</a>
@@ -61,14 +68,14 @@ function main() {
   copyDir(path.join('assets', 'img'));
   copyDir(path.join('assets', 'payment'));
 
-  writeRedirect('about.html', '/about');
-  writeRedirect('activities.html', '/activities');
-  writeRedirect('contact.html', '/contact');
-  writeRedirect('donate.html', '/donate');
-  writeRedirect('payments.html', '/payments');
-  writeRedirect('poli-statements.html', '/statements');
-  writeRedirect('poli.html', '/poli');
-  writeRedirect('region.html', '/region');
+  writeRedirect('about.html', '/about', '단체 소개 | About');
+  writeRedirect('activities.html', '/activities', '활동공유 | Activities');
+  writeRedirect('contact.html', '/contact', '문의하기 | Contact');
+  writeRedirect('donate.html', '/donate', '후원하기 | Donate');
+  writeRedirect('payments.html', '/payments', '지출내역 | Expense Reports');
+  writeRedirect('poli-statements.html', '/statements', '성명 | Statements');
+  writeRedirect('poli.html', '/poli', '정치위원회 | Political Committee');
+  writeRedirect('region.html', '/region', '지역 지부 | Regional Branches');
 }
 
 main();

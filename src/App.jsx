@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Layout } from './components/Layout.jsx';
 import { LegacyRoute } from './pages/LegacyRoute.jsx';
 import { CollectionPage } from './pages/CollectionPage.jsx';
@@ -13,6 +14,18 @@ const legacyPages = {
   '/contact': 'contact',
   '/donate': 'donate',
   '/poli': 'poli'
+};
+
+const pageTitles = {
+  '/': '빛청모 | Bichcheongmo',
+  '/about': '단체 소개 | About',
+  '/activities': '활동공유 | Activities',
+  '/statements': '성명 | Statements',
+  '/payments': '지출내역 | Expense Reports',
+  '/contact': '문의하기 | Contact',
+  '/donate': '후원하기 | Donate',
+  '/region': '지역 지부 | Regional Branches',
+  '/poli': '정치위원회 | Political Committee'
 };
 
 function resolvePage(route) {
@@ -33,6 +46,10 @@ function resolvePage(route) {
 
 export default function App() {
   const route = useHashRoute();
+
+  useEffect(() => {
+    document.title = pageTitles[route.path] || pageTitles['/'];
+  }, [route.path]);
 
   return (
     <ThemeProvider>

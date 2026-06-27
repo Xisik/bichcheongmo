@@ -93,7 +93,7 @@
    * 활동 목록 페이지 SEO 설정
    */
   function setListPageSEO() {
-    const title = t('빛청모 | 활동공유');
+    const title = '활동공유 | Activities';
     const description = t('빛청모의 다양한 활동과 소식을 공유하는 공간입니다.');
     const url = window.location.origin + window.location.pathname;
     const image = window.location.origin + '/assets/img/logo.jpg';
@@ -139,7 +139,7 @@
     }
 
     const { title, summary, body, slug, date, image } = activity;
-    const siteTitle = t('빛청모 | 활동공유');
+    const siteTitle = '활동공유 | Activities';
     const pageTitle = `${title} | ${siteTitle}`;
     const description = summary || body.substring(0, 160) || t('빛청모의 활동을 확인하세요.');
     const url = window.location.origin + window.location.pathname + `?activity=${encodeURIComponent(slug)}`;
