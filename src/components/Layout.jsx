@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '../state/LanguageContext.jsx';
 import { useTheme } from '../state/ThemeContext.jsx';
 import { toHash } from '../router/useHashRoute.js';
@@ -21,6 +21,28 @@ export function Layout({ activePath, children }) {
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (!menuOpen) {
+      document.body.classList.remove('nav-open');
+      return undefined;
+    }
+
+    document.body.classList.add('nav-open');
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.classList.remove('nav-open');
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen]);
+
   return (
     <>
       <header className="site-header">
@@ -31,6 +53,15 @@ export function Layout({ activePath, children }) {
             </a>
 
             <nav className={`nav${menuOpen ? ' is-open' : ''}`} id="siteNav" aria-label="Primary menu">
+              <button
+                type="button"
+                className="nav-close"
+                aria-label={t('closeMenu')}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="nav-close-icon" aria-hidden="true">{'\u2715'}</span>
+              </button>
+
               {navItems.map(([path, key]) => (
                   <a
                       key={path}
