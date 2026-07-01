@@ -31,6 +31,7 @@
   --accent-ribbon: linear-gradient(90deg, var(--accent), var(--accent));
 
   --r:             3px;
+  --site-min-width: 360px;
   --container-max: 1500px;
   --container-readable: 860px;
   --container-gutter: clamp(1rem, 4vw, 3rem);

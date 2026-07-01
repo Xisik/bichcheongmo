@@ -5,6 +5,11 @@
     font-display: swap;
 }
 
+html {
+  min-inline-size: var(--site-min-width);
+  overflow-x: auto;
+}
+
 body {
   background-color: var(--main-bg-color);
   font-family     : 'Cafe24SurroundAir', 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
@@ -15,7 +20,8 @@ body {
   -webkit-font-smoothing: antialiased;
   margin          : 0;
   padding         : 0;
-  overflow-x      : hidden;
+  min-inline-size : var(--site-min-width);
+  overflow-x      : auto;
   overflow-wrap   : break-word;
   word-break      : keep-all;
 }
